@@ -1,4 +1,4 @@
-package com.iguana.springboot.backend;
+package com.fatec.api.backend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

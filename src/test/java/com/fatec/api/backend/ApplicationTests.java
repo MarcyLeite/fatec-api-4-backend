@@ -1,4 +1,4 @@
-package com.iguana.springboot.backend;
+package com.fatec.api.backend;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
