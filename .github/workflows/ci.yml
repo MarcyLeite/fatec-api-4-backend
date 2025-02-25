@@ -1,14 +1,16 @@
 name: CI
 
 on:
+  workflow_call:
   push:
     branches:
-      - main
+      - develop
   pull_request:
     branches:
-      - main
+      - develop
 jobs:
   lint:
+    name: Lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -20,6 +22,7 @@ jobs:
         run: ./gradlew checkstyleTest
 
   build:
+    name: Build
     runs-on: ubuntu-latest
 
     steps:
@@ -29,6 +32,7 @@ jobs:
         run: ./gradlew bootJar
 
   test:
+    name: Test
     runs-on: ubuntu-latest
 
     steps:

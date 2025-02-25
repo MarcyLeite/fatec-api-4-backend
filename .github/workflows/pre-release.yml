@@ -1,0 +1,87 @@
+name: pre-release
+
+on:
+  push:
+    branches:
+      - release
+
+permissions: write-all
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.set-version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 21
+
+      - name: Install semantic release
+        run: npm i semantic-release
+      - name: Install semantic release gitmoji
+        run: npm i semantic-release-gitmoji
+      - name: Analyze git three and generate release metadata
+        run: node scripts/release/analyze.mjs
+      - id: set-version
+        name: Set Version
+        run: |
+          if [ -f $FILE ]; then
+            echo "version=$(cat version)" >> "$GITHUB_OUTPUT"
+          else
+            echo "version=same" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Create CHANGELOG.md
+        run: cp notes CHANGELOG.md
+      - name: Upload CHANGELOG.md
+        uses: actions/upload-artifact@v4
+        with:
+          name: changelog-artifact
+          path: CHANGELOG.md
+
+  bump:
+    name: Bump
+    runs-on: ubuntu-latest
+    needs: analyze
+    if: needs.analyze.outputs.version != 'same'
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Bump gradle build version
+        env:
+          VERSION: ${{ needs.analyze.outputs.version }}
+        run: sed -i "s/version = '.*'/version = '$VERSION'/g" build.gradle
+
+      - run: cat build.gradle
+      - name: Upload build.gradle
+        uses: actions/upload-artifact@v4
+        with:
+          name: bump-artifact
+          path: build.gradle
+
+  commit-changes:
+    name: Commit Changes
+    runs-on: ubuntu-latest
+    needs: [analyze, bump]
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Download artifacts
+      uses: actions/download-artifact@v4
+    - name: Extract artifacts
+      run: |
+        mv bump-artifact/* .
+        mv changelog-artifact/* .
+        rmdir bump-artifact changelog-artifact
+    - name: Commit changes
+      env:
+        VERSION: ${{ needs.analyze.outputs.version }}
+      run: |
+        git config --global user.name "devops"
+        git config --global user.email "devops@users.noreply.github.com"
+        git add CHANGELOG.md build.gradle
+        git commit -m "🔖 Release version $VERSION" -m "[skip ci]"
+        git push
