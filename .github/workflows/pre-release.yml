@@ -1,0 +1,48 @@
+name: pre-release
+
+on:
+  pull_request:
+    branches:
+      - release
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 21
+
+      - name: Install semantic release
+        run: npm i semantic-release
+      - name: Install semantic release gitmoji
+        run: npm i semantic-release-gitmoji
+      - name: Analyze git three and generate release metadata
+        run: node scripts/release/analyze.mjs
+      - name: Upload release metadata
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-metadata
+          path: |
+            version
+            notes
+
+  bump:
+    runs-on: ubuntu-latest
+    needs: analyze
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download release metadata
+        uses: actions/download-artifact@v4
+      - name: Update gradle build version
+        run: sed -i "s/version = '.*'/version = '$(cat .temp/version)'/g" build.gradle   
+
+  build-lint-test:
+    runs-on: ubuntu-latest
+    needs: bump
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/workflows/ci.yml@main
+  
