@@ -1,0 +1,33 @@
+name: release
+
+on:
+  push:
+    branches:
+      - main
+
+permissions: write-all
+
+jobs:
+  publish:
+    name: Publish
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: grep -oP "(?<=version = ')[^']*" build.gradle
+      - name: Get version
+        run: |
+          VERSION=$(grep -oP "(?<=version = ')[^']*" build.gradle | head -1)
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+      - name: Create tag
+        run: git tag v$VERSION
+      - name: Setup git user
+        run: |
+          git config --global user.name "devops"
+          git config --global user.email "devops@users.noreply.github.com"
+      - name: Publish tag
+        run: git push origin --tag v$VERSION
+      - name: Create release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ github.ref_name }}
+        run: gh release create v$VERSION -F CHANGELOG.md
