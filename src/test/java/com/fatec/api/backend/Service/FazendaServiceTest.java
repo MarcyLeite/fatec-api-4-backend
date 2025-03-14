@@ -9,10 +9,12 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -22,12 +24,13 @@ import com.fatec.api.backend.Entity.Fazenda;
 import com.fatec.api.backend.Repository.FazendaRepository;
 
 @ExtendWith(MockitoExtension.class)
+@SpringBootTest
 public class FazendaServiceTest {
  
-    @InjectMocks
+    @Autowired
     private FazendaService fazendaService;
 
-    @Mock
+    @MockitoBean
     private FazendaRepository fazendaRepository;
 
     @Mock
@@ -42,16 +45,16 @@ public class FazendaServiceTest {
         Fazenda fazenda1 = new Fazenda();
         fazenda1.setFazId(1L);
         fazenda1.setFazNome("Fazendinha");
-        fazenda1.setFazArea(50.0);
-        fazenda1.setFazProd(30.0);
+        fazenda1.setFazArea(30);
+        fazenda1.setFazProd(30);
         fazenda1.setFazTipoSolo("Arenoso");
         fazenda1.setCidade(cidade);
 
         Fazenda fazenda2 = new Fazenda();
         fazenda2.setFazId(2L);
         fazenda2.setFazNome("Fazendona");
-        fazenda2.setFazArea(70.0);
-        fazenda2.setFazProd(50.0);
+        fazenda2.setFazArea(70);
+        fazenda2.setFazProd(50);
         fazenda2.setFazTipoSolo("Argiloso");
         fazenda2.setCidade(cidade);
 

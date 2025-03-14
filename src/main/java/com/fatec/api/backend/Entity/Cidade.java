@@ -1,21 +1,16 @@
 package com.fatec.api.backend.Entity;
 
-import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "cidades")
+@Table(name = "cidade")
 public class Cidade {
     
     @Id
@@ -26,18 +21,9 @@ public class Cidade {
     @Column(name = "cid_name")
     private String cidNome;
 
-    @Column(name = "est_id")
+    @ManyToOne
+    @JoinColumn(name = "est_id")
     private Estado estado;
-
-    @ManyToMany(mappedBy = "cidades")
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private List<Fazenda> fazendas;
-
-    @ManyToMany
-    @JoinTable(name = "Cidade_estado",
-        joinColumns = {@JoinColumn(name = "cid_id")},
-        inverseJoinColumns = {@JoinColumn(name = "est_id")})
-    private List<Estado> estados;
 
     public Long getCidId() {
         return cidId;

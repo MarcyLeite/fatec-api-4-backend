@@ -9,11 +9,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "estados")
+@Table(name = "estado")
 public class Estado {
     
     @Id
@@ -24,7 +24,7 @@ public class Estado {
     @Column(name = "est_name")
     private String estNome;
 
-    @ManyToMany(mappedBy = "estados")
+    @OneToMany(mappedBy = "estado")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<Cidade> cidades;
 
