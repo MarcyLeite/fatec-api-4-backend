@@ -19,6 +19,12 @@ Esse repositorio utiliza lint para boas práticas e padronização de código.
 
 Para preparar o ambiente de desenvolvimento, [siga essas instruções](https://github.com/MarcyLeite/fatec-api-4/blob/main/.github/CONTRIBUING.md#-development-environment).
 
+### Scripts
+
+| Script | Execução | Descrição |
+| ----- | ---- | --- |
+| Reset DB | ./scripts/resetDB.sh | Deleta as tabelas do banco e executa os scripts de migração em `resources/db/migration` |
+
 ## 👷 CI/CD
 
 ![Backend Pipeline](../docs/assets/backend-pipeline.png)
