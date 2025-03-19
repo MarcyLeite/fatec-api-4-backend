@@ -18,6 +18,7 @@ public class Fazenda {
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id")
     @Getter
+    @Setter
     private Long id;
 
     @Column(name = "faz_nome")
