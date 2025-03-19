@@ -34,11 +34,10 @@ public class Resultado {
     @Setter
     private Date createdAt;
 
-    
-    @Column(name = "rel_geom")
     @Getter
     @Setter
-    private Geometry geometria;
+    @Column(name = "rel_shape", columnDefinition = "geometry(Geometry, 4326)")
+    private Geometry shape;
 
     @Column(name = "rel_sourch")
     @Getter

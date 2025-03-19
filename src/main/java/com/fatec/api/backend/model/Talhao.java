@@ -32,10 +32,10 @@ public class Talhao {
     @Setter
     private String cultura;
 
-    @Column(name = "tal_geom")
     @Getter
     @Setter
-    private Geometry geometria;
+    @Column(name = "rel_shape", columnDefinition = "geometry(Geometry, 4326)")
+    private Geometry shape;
 
     @Column(name = "tal_area")
     @Getter

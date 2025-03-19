@@ -22,4 +22,9 @@ public class Estado {
     @Getter
     @Setter
     private String nome;    
+
+    @Column(name = "est_sigla")
+    @Getter
+    @Setter
+    private String sigla; 
 }
