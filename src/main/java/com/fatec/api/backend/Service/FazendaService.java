@@ -6,7 +6,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.fatec.api.backend.Entity.Fazenda;
+import com.fatec.api.backend.model.Fazenda;
 import com.fatec.api.backend.Repository.FazendaRepository;
 
 @Service

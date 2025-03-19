@@ -19,8 +19,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
-import com.fatec.api.backend.Entity.Cidade;
-import com.fatec.api.backend.Entity.Fazenda;
+import com.fatec.api.backend.model.Cidade;
+import com.fatec.api.backend.model.Fazenda;
 import com.fatec.api.backend.Repository.FazendaRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -43,19 +43,19 @@ public class FazendaServiceTest {
         Pageable pageable = PageRequest.of(page, size);
 
         Fazenda fazenda1 = new Fazenda();
-        fazenda1.setFazId(1L);
-        fazenda1.setFazNome("Fazendinha");
-        fazenda1.setFazArea(30);
-        fazenda1.setFazProd(30);
-        fazenda1.setFazTipoSolo("Arenoso");
+        fazenda1.setId(1L);
+        fazenda1.setNome("Fazendinha");
+        fazenda1.setArea(30F);
+        fazenda1.setProdAnual(30F);
+        fazenda1.setTipoSolo("Arenoso");
         fazenda1.setCidade(cidade);
 
         Fazenda fazenda2 = new Fazenda();
-        fazenda2.setFazId(2L);
-        fazenda2.setFazNome("Fazendona");
-        fazenda2.setFazArea(70);
-        fazenda2.setFazProd(50);
-        fazenda2.setFazTipoSolo("Argiloso");
+        fazenda2.setId(2L);
+        fazenda2.setNome("Fazendona");
+        fazenda2.setArea(70F);
+        fazenda2.setProdAnual(50F);
+        fazenda2.setTipoSolo("Argiloso");
         fazenda2.setCidade(cidade);
 
         List<Fazenda> listaFazendas = new ArrayList<>();
@@ -69,8 +69,8 @@ public class FazendaServiceTest {
         Page<Fazenda> resultado = fazendaService.listarFazendasPaginadas(page, size);
 
         assertEquals(2, resultado.getTotalElements());
-        assertEquals("Fazendinha", resultado.getContent().get(0).getFazNome());
-        assertEquals("Fazendona", resultado.getContent().get(1).getFazNome());
+        assertEquals("Fazendinha", resultado.getContent().get(0).getNome());
+        assertEquals("Fazendona", resultado.getContent().get(1).getNome());
 
     }
 
