@@ -1,4 +1,4 @@
-package com.fatec.api.backend.Service;
+package com.fatec.api.backend.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -21,7 +21,7 @@ import org.springframework.data.domain.PageRequest;
 
 import com.fatec.api.backend.model.Cidade;
 import com.fatec.api.backend.model.Fazenda;
-import com.fatec.api.backend.Repository.FazendaRepository;
+import com.fatec.api.backend.repository.FazendaRepository;
 
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest

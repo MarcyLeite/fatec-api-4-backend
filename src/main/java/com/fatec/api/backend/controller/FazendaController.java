@@ -1,4 +1,4 @@
-package com.fatec.api.backend.Controller;
+package com.fatec.api.backend.controller;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fatec.api.backend.model.Fazenda;
-import com.fatec.api.backend.Service.FazendaService;
+import com.fatec.api.backend.service.FazendaService;
 
 @RestController
 @RequestMapping("/fazenda")

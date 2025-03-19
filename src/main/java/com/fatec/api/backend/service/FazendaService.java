@@ -1,4 +1,4 @@
-package com.fatec.api.backend.Service;
+package com.fatec.api.backend.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.fatec.api.backend.model.Fazenda;
-import com.fatec.api.backend.Repository.FazendaRepository;
+import com.fatec.api.backend.repository.FazendaRepository;
 
 @Service
 public class FazendaService {
