@@ -1,0 +1,2 @@
+PGPASSWORD=postgres psql -h database -p 5432 -U postgres terravision -f src/main/resources/db/reset.sql
+PGPASSWORD=postgres psql -h database -p 5432 -U postgres terravision -f src/main/resources/db/migration/*.sql
