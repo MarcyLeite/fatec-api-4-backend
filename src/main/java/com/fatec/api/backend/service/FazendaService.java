@@ -1,5 +1,7 @@
 package com.fatec.api.backend.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,5 +24,9 @@ public class FazendaService {
     public Page<Fazenda> listarFazendasPaginadas(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return fazendaRepository.findAll(pageable);
+    }
+
+    public List<Fazenda> listarTodasFazendas() {
+        return fazendaRepository.findAll();
     }
 }
