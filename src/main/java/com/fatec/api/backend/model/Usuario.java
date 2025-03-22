@@ -14,7 +14,7 @@ import lombok.Setter;
 @Entity
 @Table(name = "usuario")
 public class Usuario {
-    enum Role {
+   public enum Role {
         Administrador,
         Consultor,
         Analista,
