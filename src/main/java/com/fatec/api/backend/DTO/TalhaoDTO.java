@@ -6,22 +6,12 @@ public class TalhaoDTO {
 
     @Getter
     @Setter
-    private String nome;
-
-    @Getter
-    @Setter
-    private String cultura;
-
-    @Getter
-    @Setter
     private Long faz_id;
 
     public TalhaoDTO() {
     }
 
-    public TalhaoDTO(String nome, Double area, String cultura, Long faz_id) {
-        this.nome = nome;
-        this.cultura = cultura;
+    public TalhaoDTO(Long faz_id) {
         this.faz_id = faz_id;
     }
 

@@ -1,6 +1,6 @@
 package com.fatec.api.backend.model;
 
-import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.MultiPolygon;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -34,8 +34,8 @@ public class Talhao {
 
     @Getter
     @Setter
-    @Column(name = "rel_shape", columnDefinition = "geometry(Geometry, 4326)")
-    private Geometry shape;
+    @Column(name = "rel_shape", columnDefinition = "geometry(MultiPolygon, 4326)")
+    private MultiPolygon shape;
 
     @Column(name = "tal_area")
     @Getter
