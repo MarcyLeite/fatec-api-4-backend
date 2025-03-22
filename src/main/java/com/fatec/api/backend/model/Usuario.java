@@ -24,6 +24,7 @@ public class Usuario {
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id")
     @Getter
+    @Setter
     private Long id;
 
     @Column(name = "use_nome")
