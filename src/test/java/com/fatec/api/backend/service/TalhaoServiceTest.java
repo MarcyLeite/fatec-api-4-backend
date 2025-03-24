@@ -23,16 +23,19 @@ import com.fatec.api.backend.repository.FazendaRepository;
 import com.fatec.api.backend.repository.UsuarioRepository;
 
 @SpringBootTest
-public class UsuarioServiceTest {
+public class TalhaoServiceTest {
     
-    @InjectMocks
+    @Mock
     private UsuarioService usuarioService;
+
+    @InjectMocks
+    private TalhaoService talhaoService;
+
+    @Mock
+    private FazendaService fazendaService;
 
     @Mock
     private UsuarioRepository usuarioRepository;
-
-    @InjectMocks
-    private FazendaService fazendaService;
 
     @Mock
     private FazendaRepository fazendaRepository;
@@ -79,9 +82,9 @@ public class UsuarioServiceTest {
         usuario1.setNome("Gary");
 
         Usuario usuario2 = new Usuario();
+        usuario2.setId(2L);
         usuario2.setRole(Role.Analista);
         usuario2.setNome("Lary");
-        usuario2.setId(2L);
 
         Fazenda fazenda1 = new Fazenda();
         fazenda1.setId(1L);
@@ -92,43 +95,25 @@ public class UsuarioServiceTest {
         fazenda2.setNome("Fazenda2");
 
         when(usuarioService.listarAnalistas()).thenReturn(Arrays.asList(usuario1, usuario2));
-
         when(fazendaService.listarTodasFazendas()).thenReturn(Arrays.asList(fazenda1, fazenda2));
 
-        Map<String, Object> resultado = new HashMap<>();
-        resultado.put("analistas", usuarioService.listarAnalistas().stream()
-            .map(usuario -> {
-                Map<String, Object> analistaMap = new HashMap<>();
-                analistaMap.put("id", usuario.getId());
-                analistaMap.put("nome", usuario.getNome());
-                return analistaMap;
-            })
-            .collect(Collectors.toList()));
-        
-        resultado.put("fazendas", fazendaService.listarTodasFazendas().stream()
-            .map(fazenda -> {
-                Map<String, Object> fazendaMap = new HashMap<>();
-                fazendaMap.put("id", fazenda.getId());
-                fazendaMap.put("nome", fazenda.getNome());
-                return fazendaMap;
-            })
-            .collect(Collectors.toList()));
-            
+        Map<String, Object> resultado = talhaoService.listarFazendaEAnalistas(); 
+
+        // Validando a saída
         List<Map<String, Object>> analistas = (List<Map<String, Object>>) resultado.get("analistas");
-        
         List<Map<String, Object>> fazendas = (List<Map<String, Object>>) resultado.get("fazendas");
 
-         assertEquals(2, analistas.size());
-         assertEquals(1L, analistas.get(0).get("id"));
-         assertEquals("Gary", analistas.get(0).get("nome"));
-         assertEquals(2L, analistas.get(1).get("id"));
-         assertEquals("Lary", analistas.get(1).get("nome"));
- 
-         assertEquals(2, fazendas.size());
-         assertEquals(1L, fazendas.get(0).get("id"));
-         assertEquals("Fazenda1", fazendas.get(0).get("nome"));
-         assertEquals(2L, fazendas.get(1).get("id"));
-         assertEquals("Fazenda2", fazendas.get(1).get("nome"));
+        assertEquals(2, analistas.size());
+        assertEquals(1L, analistas.get(0).get("id"));
+        assertEquals("Gary", analistas.get(0).get("nome"));
+        assertEquals(2L, analistas.get(1).get("id"));
+        assertEquals("Lary", analistas.get(1).get("nome"));
+
+        assertEquals(2, fazendas.size());
+        assertEquals(1L, fazendas.get(0).get("id"));
+        assertEquals("Fazenda1", fazendas.get(0).get("nome"));
+        assertEquals(2L, fazendas.get(1).get("id"));
+        assertEquals("Fazenda2", fazendas.get(1).get("nome"));
     }
 
     @Test
