@@ -4,10 +4,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fatec.api.backend.geojson.TalhaoGeoDTO;
 import com.fatec.api.backend.model.Talhao;
 import com.fatec.api.backend.service.TalhaoService;
 
@@ -23,10 +25,10 @@ public class TalhaoController {
     }
 
     @GetMapping("/listar/{page}/{quantity}")
-    public ResponseEntity<Page<Talhao>> listarTalhoesPaginados(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        Page<Talhao> talhoes = talhaoService.listarTalhoesPaginados(page, size);
+    public ResponseEntity<Page<TalhaoGeoDTO>> listarTalhoesPaginados(
+            @PathVariable int page,
+            @PathVariable int quantity) {
+            Page<TalhaoGeoDTO> talhoes = talhaoService.listarTalhoesPaginados(page, quantity);
         return ResponseEntity.ok(talhoes);
     }
 }
