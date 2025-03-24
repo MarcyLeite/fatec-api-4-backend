@@ -1,7 +1,10 @@
 package com.fatec.api.backend.controller;
 
 import com.fatec.api.backend.service.TalhaoService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fatec.api.backend.DTO.FazDTO;
 import com.fatec.api.backend.DTO.TalhaoDTO;
 import com.fatec.api.backend.model.Fazenda;
 import com.fatec.api.backend.repository.FazendaRepository;
@@ -15,10 +18,14 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
+import java.text.ParseException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/talhoes")
-public class Talhoes {
+public class TalhoesController {
 
     @Autowired
     private TalhaoService talhaoService;
@@ -27,22 +34,23 @@ public class Talhoes {
     private FazendaRepository fazendaRepository;
 
     @PostMapping(consumes = "multipart/form-data")
-    public ResponseEntity<String> createTalhao(
-            @RequestPart("talhaoDTO") String talhaoDTOStr,
-            @RequestPart("file") MultipartFile geoJsonFile) {
+    public ResponseEntity<Map<String, List<TalhaoDTO>>> createTalhao(
+            @RequestPart("faz_id") String fazId,
+            @RequestPart("file") MultipartFile geoJsonFile) throws ParseException, JsonProcessingException, JsonMappingException {
     
-        try {
             ObjectMapper objectMapper = new ObjectMapper();
-            TalhaoDTO talhaoDTO = objectMapper.readValue(talhaoDTOStr, TalhaoDTO.class);
-
-    
-            Fazenda fazenda = fazendaRepository.getReferenceById(talhaoDTO.getFaz_id());
+            FazDTO fazDTO = objectMapper.readValue(fazId, FazDTO.class);        
+            try {
+            Fazenda fazenda = fazendaRepository.getReferenceById(fazDTO.getFaz_id());
             String geoJsonContent = new String(geoJsonFile.getBytes());
-            talhaoService.createTalhoes(geoJsonContent, fazenda);
-            return ResponseEntity.ok("Talhão criado com sucesso");
+            List<TalhaoDTO> talhoes = talhaoService.createTalhoes(geoJsonContent, fazenda);
+            Map<String, List<TalhaoDTO>> response = new HashMap<>();
+            response.put("talhoes", talhoes);
+            return ResponseEntity.ok(response);
         } catch (IOException | org.locationtech.jts.io.ParseException e) {
+            Map<String, List<TalhaoDTO>> errorResponse = new HashMap<>();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body("Erro ao processar talhão: " + e.getMessage());
+                .body(errorResponse);
         }
     }
 }
