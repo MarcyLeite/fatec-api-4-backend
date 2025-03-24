@@ -9,32 +9,30 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+import com.fatec.api.backend.geojson.TalhaoGeoDTO;
 import com.fatec.api.backend.model.Fazenda;
 import com.fatec.api.backend.model.Talhao;
 import com.fatec.api.backend.repository.TalhaoRepository;
 
 @ExtendWith(MockitoExtension.class)
-@SpringBootTest
 public class TalhaoServiceTest {
 
-    @Autowired
-    private TalhaoService talhaoService;
-
-    @MockitoBean
+    @Mock
     private TalhaoRepository talhaoRepository;
 
     @Mock
     private Fazenda fazenda;
+
+    @InjectMocks
+    private TalhaoService talhaoService;
 
     @Test
     void deveriaChamarListaDeTalhoesPaginados() {
@@ -46,12 +44,14 @@ public class TalhaoServiceTest {
         talhao1.setId(1L);
         talhao1.setNome("Talhão 1");
         talhao1.setCultura("Soja");
+        talhao1.setArea(100.0f);
         talhao1.setFazenda(fazenda);
 
         Talhao talhao2 = new Talhao();
         talhao2.setId(2L);
         talhao2.setNome("Talhão 2");
         talhao2.setCultura("Milho");
+        talhao2.setArea(150.0f);
         talhao2.setFazenda(fazenda);
 
         List<Talhao> listaTalhoes = new ArrayList<>();
@@ -62,11 +62,13 @@ public class TalhaoServiceTest {
 
         when(talhaoRepository.findAll(pageable)).thenReturn(talhoesPage);
 
-        Page<Talhao> resultado = talhaoService.listarTalhoesPaginados(page, size);
+        Page<TalhaoGeoDTO> resultado = talhaoService.listarTalhoesPaginados(page, size);
 
         assertEquals(2, resultado.getTotalElements());
         assertEquals("Talhão 1", resultado.getContent().get(0).getNome());
+        assertEquals("Soja", resultado.getContent().get(0).getCultura());
         assertEquals("Talhão 2", resultado.getContent().get(1).getNome());
+        assertEquals("Milho", resultado.getContent().get(1).getCultura());
     }
 
     @Test
