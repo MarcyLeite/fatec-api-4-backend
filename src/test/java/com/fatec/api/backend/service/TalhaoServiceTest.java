@@ -1,7 +1,6 @@
 package com.fatec.api.backend.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -18,9 +17,12 @@ import org.junit.jupiter.api.BeforeEach;
 import java.util.ArrayList;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -94,7 +96,7 @@ public class TalhaoServiceTest {
         int page = 0;
         int size = 10;
         Pageable pageable = PageRequest.of(page, size);
-
+        
         Talhao talhao1 = new Talhao();
         talhao1.setId(1L);
         talhao1.setNome("Talhão 1");
@@ -108,13 +110,13 @@ public class TalhaoServiceTest {
         talhao2.setCultura("Milho");
         talhao2.setArea(150.0f);
         talhao2.setFazenda(fazenda);
-
+        
         List<Talhao> listaTalhoes = new ArrayList<>();
         listaTalhoes.add(talhao1);
         listaTalhoes.add(talhao2);
-
+        
         Page<Talhao> talhoesPage = new PageImpl<>(listaTalhoes, pageable, listaTalhoes.size());
-
+        
         when(talhaoRepository.findAll(pageable)).thenReturn(talhoesPage);
 
         Page<TalhaoDTO> resultado = talhaoService.listarTalhoesPaginados(page, size);
@@ -125,19 +127,19 @@ public class TalhaoServiceTest {
         assertEquals("Talhão 2", resultado.getContent().get(1).getNome());
         assertEquals("Milho", resultado.getContent().get(1).getCultura());
     }
-
+    
     @Test
     void deveriaFalharAoChamarListaDeTalhoes() {
         int page = 0;
         int size = 10;
         Pageable pageable = PageRequest.of(page, size);
-
+        
         when(talhaoRepository.findAll(pageable)).thenThrow(new RuntimeException("Erro ao buscar talhões"));
-
+        
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             talhaoService.listarTalhoesPaginados(page, size);
         });
-
+        
         assertEquals("Erro ao buscar talhões", exception.getMessage());
     }
 }

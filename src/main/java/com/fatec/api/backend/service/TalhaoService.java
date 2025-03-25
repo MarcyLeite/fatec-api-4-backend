@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class TalhaoService {
-
+    
     private final TalhaoRepository talhaoRepository;
     private final GeoJsonProcessor geoJsonProcessor;
     private final TalhaoFactory talhaoFactory;
@@ -64,3 +64,4 @@ public class TalhaoService {
         return new TalhaoDTO(talhao.getId(), talhao.getNome(), talhao.getCultura(), talhao.getArea(), geoJson);
     }
 }
+

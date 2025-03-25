@@ -14,7 +14,7 @@ import lombok.Setter;
 @Entity
 @Table(name = "usuario")
 public class Usuario {
-    enum Role {
+   public enum Role {
         Administrador,
         Consultor,
         Analista,
@@ -24,6 +24,7 @@ public class Usuario {
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id")
     @Getter
+    @Setter
     private Long id;
 
     @Column(name = "use_nome")
