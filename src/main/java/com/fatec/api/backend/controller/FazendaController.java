@@ -1,6 +1,7 @@
 package com.fatec.api.backend.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -41,4 +42,10 @@ public class FazendaController {
     public ResponseEntity<List<EstadoDTO>> listarEstados() {
         return ResponseEntity.ok(estadoService.listarEstados());
     }
+
+    @GetMapping("listar/analista")
+    public ResponseEntity<Map<String, Object>> listarFazendasEAnalistas() {
+        return ResponseEntity.ok(fazendaService.listarFazendaEAnalistas());
+    }
+
 }

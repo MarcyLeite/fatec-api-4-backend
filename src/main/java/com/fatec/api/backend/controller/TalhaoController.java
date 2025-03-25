@@ -8,20 +8,20 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fatec.api.backend.geojson.TalhaoGeoDTO;
 import com.fatec.api.backend.service.TalhaoService;
+import com.fatec.api.backend.geojson.TalhaoGeoDTO;
 
+@RequestMapping("talhao")
 @RestController
-@RequestMapping("/talhao")
 @CrossOrigin(origins = "*")
 public class TalhaoController {
-
+    
     private TalhaoService talhaoService;
 
     public TalhaoController(TalhaoService talhaoService) {
         this.talhaoService = talhaoService;
     }
-
+        
     @GetMapping("/listar/{page}/{quantity}")
     public ResponseEntity<Page<TalhaoGeoDTO>> listarTalhoesPaginados(
             @PathVariable int page,
