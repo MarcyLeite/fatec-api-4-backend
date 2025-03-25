@@ -7,6 +7,4 @@ import com.fatec.api.backend.model.Talhao;
 
 @Repository
 public interface TalhaoRepository extends JpaRepository<Talhao, Long> {
-
-    
 }

@@ -3,16 +3,24 @@ package com.fatec.api.backend.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
+import java.text.ParseException;
 import java.util.List;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fatec.api.backend.DTO.TalhaoDTO;
+import com.fatec.api.backend.model.Fazenda;
+import com.fatec.api.backend.model.Talhao;
+import com.fatec.api.backend.repository.TalhaoRepository;
+import org.junit.jupiter.api.BeforeEach;
+import java.util.ArrayList;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import com.fatec.api.backend.model.Fazenda;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import java.util.ArrayList;
 
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -21,10 +29,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import com.fatec.api.backend.geojson.TalhaoGeoDTO;
-import com.fatec.api.backend.model.Talhao;
-import com.fatec.api.backend.repository.TalhaoRepository;
-
 @ExtendWith(MockitoExtension.class)
 public class TalhaoServiceTest {
 
@@ -32,10 +36,60 @@ public class TalhaoServiceTest {
     private TalhaoRepository talhaoRepository;
 
     @Mock
+    private GeoJsonProcessor geoJsonProcessor;
+
+    @Mock
+    private TalhaoFactory talhaoFactory;
+
     private Fazenda fazenda;
 
     @InjectMocks
     private TalhaoService talhaoService;
+
+    private String geoJsonContent;
+    private JsonNode features;
+
+    @BeforeEach
+    void setUp() throws IOException, ParseException, org.locationtech.jts.io.ParseException {
+        fazenda = new Fazenda();
+        fazenda.setId(1L);
+        fazenda.setNome("Fazenda Santíssima");
+
+        geoJsonContent = "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"properties\":{\"MN_TL\":\"Talhão 1\",\"CULTURA\":\"Soja\",\"AREA_HA_TL\":10.5},\"geometry\":{\"type\":\"MultiPolygon\",\"coordinates\":[[[[0,0],[0,1],[1,1],[1,0],[0,0]]]]}}]}";
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        features = objectMapper.readTree(geoJsonContent).get("features");
+    }
+
+    @Test
+    void createTalhoes_Success() throws IOException, ParseException, org.locationtech.jts.io.ParseException {
+        Talhao talhao = new Talhao();
+        talhao.setNome("Talhão 1");
+        talhao.setCultura("Soja");
+        talhao.setArea(10.5f);
+
+        when(geoJsonProcessor.cleanGeoJson(geoJsonContent)).thenReturn(geoJsonContent);
+        when(geoJsonProcessor.extractFeatures(geoJsonContent)).thenReturn(features);
+        when(talhaoFactory.createTalhao(features.get(0), fazenda)).thenReturn(talhao);
+        when(talhaoRepository.save(talhao)).thenReturn(talhao);
+
+        List<TalhaoDTO> talhoes = talhaoService.createTalhoes(geoJsonContent, fazenda);
+
+        assertEquals(1, talhoes.size());
+        assertEquals("Talhão 1", talhoes.get(0).getNome());
+        assertEquals("Soja", talhoes.get(0).getCultura());
+        assertEquals(10.5f, talhoes.get(0).getArea());
+    }
+
+    @Test
+    void createTalhoes_InvalidGeoJson() throws IOException, ParseException, org.locationtech.jts.io.ParseException {
+        String invalidGeoJsonContent = "invalid geojson";
+        when(geoJsonProcessor.cleanGeoJson(invalidGeoJsonContent)).thenThrow(IOException.class);
+
+        assertThrows(IOException.class, () -> {
+            talhaoService.createTalhoes(invalidGeoJsonContent, fazenda);
+            });
+        }
 
     @Test
     void deveriaChamarListaDeTalhoesPaginados() {
@@ -64,9 +118,9 @@ public class TalhaoServiceTest {
         Page<Talhao> talhoesPage = new PageImpl<>(listaTalhoes, pageable, listaTalhoes.size());
         
         when(talhaoRepository.findAll(pageable)).thenReturn(talhoesPage);
-        
-        Page<TalhaoGeoDTO> resultado = talhaoService.listarTalhoesPaginados(page, size);
-        
+
+        Page<TalhaoDTO> resultado = talhaoService.listarTalhoesPaginados(page, size);
+
         assertEquals(2, resultado.getTotalElements());
         assertEquals("Talhão 1", resultado.getContent().get(0).getNome());
         assertEquals("Soja", resultado.getContent().get(0).getCultura());
