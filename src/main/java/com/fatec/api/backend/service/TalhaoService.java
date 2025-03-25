@@ -12,6 +12,12 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
+import java.util.stream.Collectors;
 
 @Service
 public class TalhaoService {
@@ -35,12 +41,27 @@ public class TalhaoService {
             for (JsonNode feature : features) {
                 Talhao talhao = talhaoFactory.createTalhao(feature, fazenda);
                 talhaoRepository.save(talhao);
-                ArrayNode geoJson = geoJsonProcessor.extractCoordinates(talhao.getShape());
-                TalhaoDTO talhaoDTO = new TalhaoDTO(talhao.getId(), talhao.getNome(), talhao.getCultura(), talhao.getArea(), geoJson);
+                TalhaoDTO talhaoDTO = this.convertToGeoDTO(talhao);
                 talhoes.add(talhaoDTO);
             }
         }
 
         return talhoes;
+    }
+
+    public Page<TalhaoDTO> listarTalhoesPaginados(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Talhao> talhoesPage = talhaoRepository.findAll(pageable);
+        
+        List<TalhaoDTO> talhoesDTO = talhoesPage.getContent().stream()
+                .map(this::convertToGeoDTO)
+                .collect(Collectors.toList());
+                
+        return new PageImpl<>(talhoesDTO, pageable, talhoesPage.getTotalElements());
+    }
+
+    private TalhaoDTO convertToGeoDTO(Talhao talhao) {
+        ArrayNode geoJson = geoJsonProcessor.extractCoordinates(talhao.getShape());
+        return new TalhaoDTO(talhao.getId(), talhao.getNome(), talhao.getCultura(), talhao.getArea(), geoJson);
     }
 }
