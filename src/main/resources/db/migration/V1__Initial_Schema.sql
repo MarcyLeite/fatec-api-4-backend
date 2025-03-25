@@ -121,3 +121,6 @@ INSERT INTO estado (est_nome, est_sigla) VALUES ('Santa Catarina', 'SC');
 INSERT INTO estado (est_nome, est_sigla) VALUES ('São Paulo', 'SP');
 INSERT INTO estado (est_nome, est_sigla) VALUES ('Sergipe', 'SE');
 INSERT INTO estado (est_nome, est_sigla) VALUES ('Tocantins', 'TO');
+
+INSERT INTO cidade (cid_nome, est_id) VALUES ('Rio Branco', 1);
+INSERT INTO fazenda (faz_nome, faz_prod_anual, faz_area, faz_tipo_solo, cid_id) VALUES ('Santíssima', 500, 500, 'roxo', 1);

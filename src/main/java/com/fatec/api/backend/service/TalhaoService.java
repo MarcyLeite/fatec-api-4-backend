@@ -1,6 +1,7 @@
 package com.fatec.api.backend.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fatec.api.backend.model.Talhao;
 import com.fatec.api.backend.DTO.TalhaoDTO;
 import com.fatec.api.backend.model.Fazenda;
@@ -34,7 +35,8 @@ public class TalhaoService {
             for (JsonNode feature : features) {
                 Talhao talhao = talhaoFactory.createTalhao(feature, fazenda);
                 talhaoRepository.save(talhao);
-                TalhaoDTO talhaoDTO = new TalhaoDTO(talhao.getId(), talhao.getNome(), talhao.getCultura(), talhao.getArea());
+                ArrayNode geoJson = geoJsonProcessor.extractCoordinates(talhao.getShape());
+                TalhaoDTO talhaoDTO = new TalhaoDTO(talhao.getId(), talhao.getNome(), talhao.getCultura(), talhao.getArea(), geoJson);
                 talhoes.add(talhaoDTO);
             }
         }
