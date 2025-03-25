@@ -1,7 +1,5 @@
 package com.fatec.api.backend.controller;
 
-import java.util.Map;
-
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -23,13 +21,7 @@ public class TalhaoController {
     public TalhaoController(TalhaoService talhaoService) {
         this.talhaoService = talhaoService;
     }
-
-    @GetMapping("/editar")
-    public ResponseEntity<Map<String, Object>> listarFazendasEAnalistas() {
         
-        return ResponseEntity.ok(talhaoService.listarFazendaEAnalistas());
-    }
-
     @GetMapping("/listar/{page}/{quantity}")
     public ResponseEntity<Page<TalhaoGeoDTO>> listarTalhoesPaginados(
             @PathVariable int page,
