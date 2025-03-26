@@ -1,8 +1,11 @@
 package com.fatec.api.backend.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fatec.api.backend.DTO.EstadoDTO;
 import com.fatec.api.backend.model.Fazenda;
+import com.fatec.api.backend.repository.FazendaRepository;
 import com.fatec.api.backend.service.EstadoService;
 import com.fatec.api.backend.service.FazendaService;
 
@@ -24,6 +28,9 @@ public class FazendaController {
     private FazendaService fazendaService;
 
     private EstadoService estadoService;
+    
+    @Autowired
+    private FazendaRepository fazendaRepository;
 
     public FazendaController(FazendaService fazendaService, EstadoService estadoService) {
         this.fazendaService = fazendaService;
@@ -36,6 +43,20 @@ public class FazendaController {
             @RequestParam(defaultValue = "10") int size) {
         Page<Fazenda> fazendas = fazendaService.listarFazendasPaginadas(page, size);
         return ResponseEntity.ok(fazendas);
+    }
+
+    @GetMapping("listar")
+    public ResponseEntity<List<Map<String, Object>>> listarFazendas() {
+        List<Fazenda> fazendas = fazendaRepository.findAll();
+        List<Map<String, Object>> fazendasSerializer = new ArrayList<>();
+
+        for (Fazenda fazenda : fazendas) {
+            Map<String, Object> i = new HashMap<>();
+            i.put("id", fazenda.getId());
+            i.put("nome", fazenda.getNome());
+            fazendasSerializer.add(i);
+        }
+        return ResponseEntity.ok(fazendasSerializer);
     }
 
     @GetMapping("/editar")
