@@ -2,13 +2,17 @@ package com.fatec.api.backend.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
 
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fatec.api.backend.DTO.TalhaoDTO;
 import com.fatec.api.backend.model.Fazenda;
 import com.fatec.api.backend.model.Talhao;
@@ -60,6 +64,31 @@ public class TalhaoServiceTest {
         ObjectMapper objectMapper = new ObjectMapper();
         features = objectMapper.readTree(geoJsonContent).get("features");
     }
+
+    @Test
+    void getTalhao_Success() throws JsonMappingException, JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        ArrayNode coordinatesArray = (ArrayNode) objectMapper.readTree("[[[[0,0],[0,1],[1,1],[1,0],[0,0]]]]");
+        when(geoJsonProcessor.extractCoordinates(any())).thenReturn(coordinatesArray);
+        Long talhaoId = 1L;
+
+        Talhao talhao = new Talhao();
+        talhao.setId(talhaoId);
+        talhao.setNome("Talhão 1");
+        talhao.setCultura("Soja");
+        talhao.setArea(10.5f);
+
+        when(talhaoRepository.getReferenceById(talhaoId)).thenReturn(talhao);
+
+        TalhaoDTO talhaoDTO = talhaoService.getTalhao(talhaoId);
+
+        assertEquals(talhaoId, talhaoDTO.getId());
+        assertEquals("Talhão 1", talhaoDTO.getNome());
+        assertEquals("Soja", talhaoDTO.getCultura());
+        assertEquals(10.5f, talhaoDTO.getArea());
+        assertEquals("[[[[0,0],[0,1],[1,1],[1,0],[0,0]]]]", talhaoDTO.getGeojson().toString());
+    }
+
 
     @Test
     void createTalhoes_Success() throws IOException, ParseException, org.locationtech.jts.io.ParseException {

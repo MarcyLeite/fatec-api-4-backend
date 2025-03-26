@@ -63,5 +63,11 @@ public class TalhaoService {
         ArrayNode geoJson = geoJsonProcessor.extractCoordinates(talhao.getShape());
         return new TalhaoDTO(talhao.getId(), talhao.getNome(), talhao.getCultura(), talhao.getArea(), geoJson);
     }
+
+    public TalhaoDTO getTalhao(Long id) {
+        Talhao talhao = talhaoRepository.getReferenceById(id);
+        ArrayNode geoJson = geoJsonProcessor.extractCoordinates(talhao.getShape());
+        return new TalhaoDTO(talhao.getId(), talhao.getNome(), talhao.getCultura(), talhao.getArea(), geoJson);
+    }
 }
 
