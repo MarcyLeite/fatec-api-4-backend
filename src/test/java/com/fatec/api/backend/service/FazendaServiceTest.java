@@ -31,7 +31,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
-import com.fatec.api.backend.DTO.EstadoDTO;
 import com.fatec.api.backend.model.Cidade;
 import com.fatec.api.backend.model.Estado;
 import com.fatec.api.backend.model.Fazenda;
