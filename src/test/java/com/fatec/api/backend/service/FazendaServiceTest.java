@@ -1,7 +1,12 @@
 package com.fatec.api.backend.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -11,6 +16,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
@@ -24,10 +31,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
+import com.fatec.api.backend.DTO.EstadoDTO;
 import com.fatec.api.backend.model.Cidade;
+import com.fatec.api.backend.model.Estado;
 import com.fatec.api.backend.model.Fazenda;
 import com.fatec.api.backend.model.Usuario;
 import com.fatec.api.backend.model.Usuario.Role;
+import com.fatec.api.backend.repository.CidadeRepository;
+import com.fatec.api.backend.repository.EstadoRepository;
 import com.fatec.api.backend.repository.FazendaRepository;
 import com.fatec.api.backend.repository.UsuarioRepository;
 
@@ -46,6 +57,12 @@ public class FazendaServiceTest {
 
     @Mock
     private UsuarioRepository usuarioRepository;
+
+    @Mock
+    private EstadoRepository estadoRepository;
+
+    @Mock
+    private CidadeRepository cidadeRepository;
 
     @Mock
     private Cidade cidade;
@@ -232,4 +249,121 @@ public class FazendaServiceTest {
         assertEquals(1L, fazendas.get(0).get("id"), "O ID da fazenda deveria ser 1.");
         assertEquals("Fazenda Inválida", fazendas.get(0).get("nome"), "O nome da fazenda deveria ser 'Fazenda Inválida'.");
     }
+
+    @Test
+    void deveCadastrarFazendaQuandoTemCidade() {
+        Fazenda fazenda1 = new Fazenda();
+        fazenda1.setId(1L);
+        fazenda1.setNome("Fazendinha");
+        fazenda1.setArea(30F);
+        fazenda1.setProdAnual(30F);
+        fazenda1.setTipoSolo("Arenoso");
+        fazenda1.setCidade(cidade);
+
+        when(cidadeRepository.findById(anyLong())).thenReturn(Optional.of(cidade));
+
+        when(fazendaRepository.save(any(Fazenda.class))).thenReturn(fazenda1);
+
+        Fazenda resultado = fazendaService.cadastrarFazenda(fazenda1);
+
+        assertEquals(1, resultado.getId());
+        assertEquals("Fazendinha", resultado.getNome());
+        assertEquals(30F, resultado.getArea());
+        assertEquals(30F, resultado.getProdAnual());
+        assertEquals("Arenoso", resultado.getTipoSolo());
+        assertEquals(cidade, resultado.getCidade());
+
+        verify(cidadeRepository, times(1)).findById(anyLong());
+        verify(fazendaRepository, times(1)).save(fazenda1);
+    }   
+
+    @Test
+    void deveCadastrarFazendoQuandoNaoTemCidade() {
+        Fazenda fazenda1 = new Fazenda();
+        fazenda1.setNome("Fazendinha");
+        fazenda1.setArea(30F);
+        fazenda1.setProdAnual(30F);
+        fazenda1.setTipoSolo("Arenoso");
+    
+        Estado estado = new Estado();
+        estado.setId(1L);
+        estado.setNome("Acre");
+    
+        Cidade cidade = new Cidade();
+        cidade.setEstado(estado); 
+        fazenda1.setCidade(cidade);
+    
+        Cidade novaCidade = new Cidade();
+        novaCidade.setId(1L);
+        novaCidade.setNome("Cidade né");
+        novaCidade.setEstado(estado);
+    
+        when(estadoRepository.findById(1L)).thenReturn(Optional.of(estado)); 
+    
+        when(cidadeRepository.save(any(Cidade.class))).thenReturn(novaCidade);
+    
+        when(fazendaRepository.save(any(Fazenda.class))).thenAnswer(invocation -> {
+            Fazenda f = invocation.getArgument(0);
+            f.setId(1L); 
+            f.setCidade(novaCidade); 
+            return f;
+        });
+    
+        Fazenda resultado = fazendaService.cadastrarFazenda(fazenda1);
+    
+        assertNotNull(resultado);
+        assertEquals(1L, resultado.getId()); 
+        assertEquals("Fazendinha", resultado.getNome());
+        assertEquals(30F, resultado.getArea());
+        assertEquals(30F, resultado.getProdAnual());
+        assertEquals("Arenoso", resultado.getTipoSolo());
+        assertNotNull(resultado.getCidade());
+        assertEquals(1L, resultado.getCidade().getId());
+        assertEquals("Cidade né", resultado.getCidade().getNome());
+        assertEquals(estado, resultado.getCidade().getEstado());
+    
+        verify(estadoRepository, times(1)).findById(1L); 
+        verify(cidadeRepository, times(1)).save(any(Cidade.class)); 
+        verify(fazendaRepository, times(1)).save(any(Fazenda.class));
+    }
+
+    @Test
+    void deveFalharAoCadastrarFazendaComCidade() {
+        Fazenda fazenda1 = new Fazenda();
+        fazenda1.setId(1L);
+        fazenda1.setNome("Fazendinha");
+        fazenda1.setArea(30F);
+        fazenda1.setProdAnual(30F);
+        fazenda1.setTipoSolo("Arenoso");
+        fazenda1.setCidade(cidade);
+
+        when(cidadeRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(NoSuchElementException.class, () -> {
+            fazendaService.cadastrarFazenda(fazenda1);
+        });
+
+        verify(cidadeRepository, times(1)).findById(anyLong());
+        verify(fazendaRepository, times(0)).save(any(Fazenda.class));
+    }
+
+    @Test
+    void deveFalharAoCadastrarFazendaSemCidade() {
+        Fazenda fazenda1 = new Fazenda();
+        fazenda1.setNome("Fazendinha");
+        fazenda1.setArea(30F);
+        fazenda1.setProdAnual(30F);
+        fazenda1.setTipoSolo("Arenoso");
+        
+        Cidade cidade = new Cidade();
+        cidade.setId(null);
+        fazenda1.setCidade(cidade);
+    
+        assertThrows(NullPointerException.class, () -> {
+            fazendaService.cadastrarFazenda(fazenda1);
+        });
+        
+        verify(fazendaRepository, times(0)).save(any(Fazenda.class));
+    }
 }
+
