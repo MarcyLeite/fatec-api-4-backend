@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,6 +30,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/talhao")
+@CrossOrigin(origins = "*")
 public class TalhaoController {
 
     @Autowired
@@ -39,12 +41,12 @@ public class TalhaoController {
 
     @PostMapping(consumes = "multipart/form-data")
     public ResponseEntity<Map<String, List<TalhaoDTO>>> createTalhao(
-            @RequestPart("faz_id") String fazId,
-            @RequestPart("file") MultipartFile geoJsonFile) throws ParseException, JsonProcessingException, JsonMappingException {
-    
-            ObjectMapper objectMapper = new ObjectMapper();
-            FazDTO fazDTO = objectMapper.readValue(fazId, FazDTO.class);        
-            try {
+        @RequestPart("faz_id") String fazId,
+        @RequestPart("file") MultipartFile geoJsonFile) throws ParseException, JsonProcessingException, JsonMappingException {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        FazDTO fazDTO = objectMapper.readValue(fazId, FazDTO.class);        
+        try {
             Fazenda fazenda = fazendaRepository.getReferenceById(fazDTO.getFaz_id());
             String geoJsonContent = new String(geoJsonFile.getBytes());
             List<TalhaoDTO> talhoes = talhaoService.createTalhoes(geoJsonContent, fazenda);
