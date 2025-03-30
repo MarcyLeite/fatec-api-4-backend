@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,6 +20,7 @@ import com.fatec.api.backend.model.Fazenda;
 import com.fatec.api.backend.repository.FazendaRepository;
 import com.fatec.api.backend.service.EstadoService;
 import com.fatec.api.backend.service.FazendaService;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/fazenda")
@@ -32,9 +34,16 @@ public class FazendaController {
     @Autowired
     private FazendaRepository fazendaRepository;
 
+    
     public FazendaController(FazendaService fazendaService, EstadoService estadoService) {
         this.fazendaService = fazendaService;
         this.estadoService = estadoService;
+    }
+
+    @PostMapping()
+    public ResponseEntity<?> createFazenda(@RequestBody Fazenda fazenda) {
+        Fazenda savedFazenda = fazendaService.cadastrarFazenda(fazenda);
+        return ResponseEntity.ok(savedFazenda);
     }
 
     @GetMapping("listar/{page}/{quantity}")

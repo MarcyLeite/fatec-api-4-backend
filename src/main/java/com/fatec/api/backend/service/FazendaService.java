@@ -11,8 +11,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.fatec.api.backend.model.Cidade;
+import com.fatec.api.backend.model.Estado;
 import com.fatec.api.backend.model.Fazenda;
 import com.fatec.api.backend.model.Usuario;
+import com.fatec.api.backend.repository.CidadeRepository;
+import com.fatec.api.backend.repository.EstadoRepository;
 import com.fatec.api.backend.repository.FazendaRepository;
 
 @Service
@@ -20,12 +24,34 @@ public class FazendaService {
     
     private FazendaRepository fazendaRepository;
 
+    @Autowired
+    private CidadeRepository cidadeRepository;
+    @Autowired
+    private EstadoRepository estadoRepository;
+
     private UsuarioService usuarioService;
 
     @Autowired
     public FazendaService(FazendaRepository fazendaRepository, UsuarioService usuarioService) {
         this.fazendaRepository = fazendaRepository;
         this.usuarioService = usuarioService;
+    }
+
+    public Fazenda cadastrarFazenda(Fazenda fazenda) {
+        Cidade cidade = null;
+        if (fazenda.getCidade().getId() == null) {
+            Cidade cidadeRaw = fazenda.getCidade();
+            Estado estado = estadoRepository.findById(cidadeRaw.getEstado().getId()).get();
+            cidadeRaw.setEstado(estado);
+            cidade = cidadeRepository.save(cidadeRaw);
+        } else {
+            cidade = cidadeRepository.findById(fazenda.getCidade().getId()).get();
+        }
+
+        fazenda.setCidade(cidade);
+            
+        Fazenda savedFazenda = fazendaRepository.save(fazenda);
+        return savedFazenda;
     }
 
     public Page<Fazenda> listarFazendasPaginadas(int page, int size) {
