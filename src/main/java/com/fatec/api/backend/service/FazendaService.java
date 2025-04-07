@@ -3,6 +3,7 @@ package com.fatec.api.backend.service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,6 +91,24 @@ public class FazendaService {
         response.put("analistas", analistasMapeados);
 
         return response;
+    }
+
+    public Fazenda editarFazenda(Long id, Fazenda dados) {
+        Optional<Fazenda> fazendaExiste = fazendaRepository.findById(id);
+
+        if(fazendaExiste.isPresent()) {
+            Fazenda fazendaEditada = fazendaExiste.get();
+            fazendaEditada.setNome(dados.getNome());
+            fazendaEditada.setArea(dados.getArea());
+            fazendaEditada.setCidade(dados.getCidade());
+            fazendaEditada.setProdAnual(dados.getProdAnual());
+            fazendaEditada.setTipoSolo(dados.getTipoSolo());
+
+            Fazenda fazendaAtualizada = fazendaRepository.save(fazendaEditada);
+            return fazendaAtualizada;
+        }
+
+        throw new RuntimeException("Fazenda de Id " + id + "não encontrada");
     }
     
 }

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -76,6 +77,11 @@ public class FazendaController {
     @GetMapping("listar/analista")
     public ResponseEntity<Map<String, Object>> listarFazendasEAnalistas() {
         return ResponseEntity.ok(fazendaService.listarFazendaEAnalistas());
+    }
+
+    @PutMapping("editar/{id}")
+    public ResponseEntity<Fazenda> editarFazenda(@PathVariable Long id, @RequestBody Fazenda dados) {
+        return ResponseEntity.ok(fazendaService.editarFazenda(id, dados));
     }
 
 }
