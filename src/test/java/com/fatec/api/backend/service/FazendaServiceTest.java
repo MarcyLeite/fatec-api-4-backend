@@ -364,5 +364,53 @@ public class FazendaServiceTest {
         
         verify(fazendaRepository, times(0)).save(any(Fazenda.class));
     }
+
+    @Test
+    void deveEditarAFazendaComSucesso() {
+        Fazenda fazendaExistente = new Fazenda();
+        fazendaExistente.setNome("Fazendinha");
+        fazendaExistente.setArea(30F);
+        fazendaExistente.setProdAnual(30F);
+        fazendaExistente.setTipoSolo("Arenoso");
+
+        Fazenda fazendaAtualizada = new Fazenda();
+        fazendaAtualizada.setNome("Fazendãann");
+        fazendaAtualizada.setArea(70F);
+        fazendaAtualizada.setProdAnual(10F);
+        fazendaAtualizada.setTipoSolo("Ardiloso(Isso msm que vc leu)");
+
+        when(fazendaRepository.findById(1L)).thenReturn(Optional.of(fazendaExistente));
+        when(fazendaRepository.save(any(Fazenda.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Fazenda resultado = fazendaService.editarFazenda(1L, fazendaAtualizada);
+
+        assertEquals("Fazendãann", resultado.getNome());
+        assertEquals(70F, resultado.getArea());
+        assertEquals(10F, resultado.getProdAnual());
+        assertEquals("Ardiloso(Isso msm que vc leu)", resultado.getTipoSolo());
+    }
+
+    @Test
+    void deveFalharEmFazerEdicao() {
+        Fazenda fazendaExistente = new Fazenda();
+        fazendaExistente.setNome("Fazendinha");
+        fazendaExistente.setArea(30F);
+        fazendaExistente.setProdAnual(30F);
+        fazendaExistente.setTipoSolo("Arenoso");
+
+        Fazenda fazendaAtualizada = new Fazenda();
+        fazendaAtualizada.setNome("Fazendãann");
+        fazendaAtualizada.setArea(70F);
+        fazendaAtualizada.setProdAnual(10F);
+        fazendaAtualizada.setTipoSolo("Ardiloso(Isso msm que vc leu)");
+
+        when(fazendaRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            fazendaService.editarFazenda(999L, fazendaAtualizada);
+        });
+
+        assertEquals("Fazenda de Id 999não encontrada", exception.getMessage());
+    }
 }
 
