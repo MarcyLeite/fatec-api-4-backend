@@ -11,39 +11,30 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "fazenda")
 public class Fazenda {
+
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id")
-    @Getter
-    @Setter
     private Long id;
 
     @Column(name = "faz_nome")
-    @Getter
-    @Setter
     private String nome;
 
     @Column(name = "faz_prod_anual")
-    @Getter
-    @Setter
     private Float prodAnual;
 
     @Column(name = "faz_area")
-    @Getter
-    @Setter
     private Float area;
 
     @Column(name = "faz_tipo_solo")
-    @Getter
-    @Setter
     private String tipoSolo;
 
     @ManyToOne
     @JoinColumn(name = "cid_id")
-    @Getter
-    @Setter
     private Cidade cidade;
 }

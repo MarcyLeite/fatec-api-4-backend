@@ -1,41 +1,32 @@
 package com.fatec.api.backend.model;
 
 import java.util.Date;
+import java.util.List;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-@Entity
-@Table(name = "usuario")
-public class Usuario {
-   public enum Role {
-        Administrador,
-        Consultor,
-        Analista,
-    }
-
+public class Missao {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "use_nome")
-    private String nome;
-
-    @Column(name = "use_email")
-    private String email;
-
-    @Column(name = "use_role")
-    private Role role;
-
     @Column(name = "created_at")
-    private Date createdAt;
+    private Date createdAt; 
+    
+    @ManyToMany
+    @JoinTable(name = "mtm_missoes_talhoes",
+        joinColumns = {@JoinColumn(name="mis_id")},
+        inverseJoinColumns = {@JoinColumn(name="tal_id")})
+    private List<Talhao> talhoes;
 }

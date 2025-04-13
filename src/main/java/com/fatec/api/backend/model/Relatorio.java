@@ -14,6 +14,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "relatorio")
 public class Relatorio {
     enum Status {
@@ -26,32 +28,21 @@ public class Relatorio {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id")
-    @Getter
     private Long id;
 
     @Column(name = "start_review")
-    @Getter
-    @Setter
     private Date startReview;
 
     @Column(name = "end_review")
-    @Getter
-    @Setter
     private Date endReview;
 
     @Column(name = "percentual_diff")
-    @Getter
-    @Setter
     private Float percentualDifference;
 
     @Column(name = "rel_status")
-    @Getter
-    @Setter
     private Status status;
     
     @ManyToOne
     @JoinColumn(name = "use_id")
-    @Getter
-    @Setter
     private Usuario usuario;
 }

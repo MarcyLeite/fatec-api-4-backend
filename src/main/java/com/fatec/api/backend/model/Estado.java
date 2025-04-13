@@ -9,23 +9,19 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "estado")
 public class Estado {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id")
-    @Getter
-    @Setter
     private Long id;
 
     @Column(name = "est_nome")
-    @Getter
-    @Setter
     private String nome;    
 
     @Column(name = "est_sigla")
-    @Getter
-    @Setter
     private String sigla; 
 }
