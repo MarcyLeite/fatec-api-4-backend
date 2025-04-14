@@ -1,5 +1,7 @@
 package com.fatec.api.backend.model;
 
+import org.locationtech.jts.geom.MultiPolygon;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -14,17 +16,17 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "cidade")
-public class Cidade {
+@Table(name = "daninha")
+public class Daninha {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "cid_nome")
-    private String nome;
-
+    @Column(name = "dan_geom")
+    private MultiPolygon geom;
+    
     @ManyToOne
-    @JoinColumn(name = "est_id")
-    private Estado estado;
+    @JoinColumn(name = "res_id")
+    private Resultado resultado;
 }
