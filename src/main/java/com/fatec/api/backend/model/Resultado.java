@@ -1,9 +1,5 @@
 package com.fatec.api.backend.model;
 
-import java.util.Date;
-
-import org.locationtech.jts.geom.Geometry;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -15,6 +11,8 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "resultado")
 public class Resultado {
@@ -26,33 +24,12 @@ public class Resultado {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id")
-    @Getter
     private Long id;
 
-    @Column(name = "created_at")
-    @Getter
-    @Setter
-    private Date createdAt;
-
-    @Getter
-    @Setter
-    @Column(name = "rel_shape", columnDefinition = "geometry(Geometry, 4326)")
-    private Geometry shape;
-
-    @Column(name = "rel_sourch")
-    @Getter
-    @Setter
+    @Column(name = "res_source")
     private Source source;
 
     @ManyToOne
-    @JoinColumn(name = "tal_id")
-    @Getter
-    @Setter
-    private Talhao talhao;
-
-    @ManyToOne
-    @JoinColumn(name = "rel_id")
-    @Getter
-    @Setter
-    private Resultado resultado;
+    @JoinColumn(name = "mis_id")
+    private Missao missao;
 }
