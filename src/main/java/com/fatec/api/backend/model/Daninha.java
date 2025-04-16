@@ -2,6 +2,8 @@ package com.fatec.api.backend.model;
 
 import org.locationtech.jts.geom.MultiPolygon;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -30,5 +32,6 @@ public class Daninha {
     
     @ManyToOne
     @JoinColumn(name = "res_id")
+    @JsonIgnore
     private Resultado resultado;
 }

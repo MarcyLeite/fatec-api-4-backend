@@ -1,6 +1,7 @@
 package com.fatec.api.backend.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,12 +17,19 @@ public class MissaoService {
     @Autowired
     private MissaoRepository missaoRepository;
 
-    public Missao saveMissao(Missao missao) {
+    private Missao saveMissao(Missao missao) {
         return missaoRepository.save(missao);
     }
 
     public Missao CreateMissao(List<Talhao> talhoes) {
         return saveMissao(new Missao(talhoes));
     }
-    
+
+    public Missao getMissaobyId(Long missao_id) {
+        Optional<Missao>missaoOptional = missaoRepository.findById(missao_id);
+        if (missaoOptional.isEmpty()) {
+            throw new IllegalArgumentException("Não existe resultados vinculados a esse QA");
+        }
+        return missaoOptional.get();
+    }    
 }
