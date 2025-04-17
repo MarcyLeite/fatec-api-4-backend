@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fatec.api.backend.DTO.ResultadoDTO;
 import com.fatec.api.backend.service.ResultService;
 
 @RestController
@@ -29,7 +28,7 @@ public class ResultController {
     private ResultService resultService;
     
     @PostMapping(value="/ai", consumes = "multipart/form-data")
-    public ResponseEntity<ResultadoDTO> createResultai(
+    public ResponseEntity<Map<String, String> > createResultai(
         @RequestPart("talhoes_ids") String talhoesIdsString,
         @RequestPart("file") MultipartFile geoJsonFile) throws ParseException, IOException, org.locationtech.jts.io.ParseException {
         List<Long> talhoesIds = Arrays.stream(talhoesIdsString.split(" "))
@@ -38,29 +37,32 @@ public class ResultController {
                                             .collect(Collectors.toList());
         try {
             String geoJsonContent = new String(geoJsonFile.getBytes());
-            ResultadoDTO resultado = resultService.createResultAI(geoJsonContent, talhoesIds);
-            return ResponseEntity.ok(resultado);
+            resultService.createResultAIAsync(geoJsonContent, talhoesIds);
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Processamento iniciado. Logo terá seu resultado disponivel");
+            return ResponseEntity.ok(response);
         } catch (IOException e) {
-            ResultadoDTO errorResponse = null; 
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "An error occurred while processing the request.");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
     }
 
     @PostMapping(value="/qa", consumes = "multipart/form-data")
-    public ResponseEntity<Map<String, ResultadoDTO>> createResultqa(
+    public ResponseEntity<Map<String, String>> createResultqa(
         @RequestPart("missao_id") String missaoId,
         @RequestPart("file") MultipartFile geoJsonFile) throws ParseException, IOException, org.locationtech.jts.io.ParseException {
 
         Long missao_id = Long.valueOf(missaoId);  
         try {
             String geoJsonContent = new String(geoJsonFile.getBytes());
-            ResultadoDTO resultado = resultService.createResultQA(geoJsonContent, missao_id);
-            Map<String, ResultadoDTO> response = new HashMap<>();
-            response.put("resultado", resultado);
+            resultService.createResultQAAsyn(geoJsonContent, missao_id);
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Processamento iniciado. Logo terá seu resultado disponivel");
             return ResponseEntity.ok(response);
         } catch (IOException e) {
-            Map<String, ResultadoDTO> errorResponse = new HashMap<>();
-            errorResponse.put("error", null); 
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "An error occurred while processing the request.");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
     }

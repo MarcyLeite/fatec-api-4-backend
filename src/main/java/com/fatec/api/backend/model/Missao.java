@@ -11,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,6 +26,10 @@ import lombok.AllArgsConstructor;
 @Table(name = "missao")
 public class Missao {
 
+
+    public Missao(List<Talhao> talhoes) {
+        this.talhoes = talhoes;
+    }
     public enum Status {
         pendente, finalizada
     };
@@ -37,6 +42,9 @@ public class Missao {
     @Column(name="mis_created_at", nullable=false, updatable=false)
     private LocalDateTime dataHoraCriacao = LocalDateTime.now();
 
+    @Column(name="mis_last_upload", nullable=false)
+    private LocalDateTime lastUpload = LocalDateTime.now();
+
     @Column(name="mis_status", nullable=false)
     private Status status = Status.pendente;
 
@@ -46,7 +54,8 @@ public class Missao {
         inverseJoinColumns = {@JoinColumn(name="tal_id")})
     private List<Talhao> talhoes;
 
-    public Missao(List<Talhao> talhoes) {
-        this.talhoes = talhoes;
+    @PreUpdate
+    public void preUpdate() {
+        this.lastUpload = LocalDateTime.now();
     }
 }

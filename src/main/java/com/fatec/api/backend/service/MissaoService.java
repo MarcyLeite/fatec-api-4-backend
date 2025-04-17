@@ -32,4 +32,9 @@ public class MissaoService {
         }
         return missaoOptional.get();
     }    
+
+    public Missao finalizeMissao(Missao missao) {
+        missao.setStatus(Missao.Status.finalizada);
+        return missaoRepository.save(missao);
+    }
 }
