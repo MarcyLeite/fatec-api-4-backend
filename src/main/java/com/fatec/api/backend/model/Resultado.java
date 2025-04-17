@@ -10,14 +10,16 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.AllArgsConstructor;
 
+@AllArgsConstructor
 @Getter
 @Setter
 @Entity
 @Table(name = "resultado")
 public class Resultado {
 
-    enum Source {
+    public enum Source {
         AI, QA
     };
 
