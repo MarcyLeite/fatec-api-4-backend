@@ -144,12 +144,3 @@ INSERT INTO estado (est_nome, est_sigla) VALUES ('Santa Catarina', 'SC');
 INSERT INTO estado (est_nome, est_sigla) VALUES ('São Paulo', 'SP');
 INSERT INTO estado (est_nome, est_sigla) VALUES ('Sergipe', 'SE');
 INSERT INTO estado (est_nome, est_sigla) VALUES ('Tocantins', 'TO');
-
-INSERT INTO cidade (est_id, cid_nome) VALUES (1, 'Rio Branco'); -- Estado Acre (AC)
-INSERT INTO cidade (est_id, cid_nome) VALUES (2, 'Maceió'); -- Estado Alagoas (AL)
-INSERT INTO cidade (est_id, cid_nome) VALUES (3, 'Macapá'); -- Estado Amapá (AP)
-INSERT INTO cidade (est_id, cid_nome) VALUES (4, 'Manaus'); -- Estado Amazonas (AM)
-INSERT INTO cidade (est_id, cid_nome) VALUES (5, 'Salvador'); -- Estado Bahia (BA);
-
-INSERT INTO fazenda (faz_area, faz_prod_anual, cid_id, faz_nome, faz_tipo_solo)
-VALUES (150.5, 2000.0, 1, 'Fazenda Rio Verde', 'Argiloso'); -- Cidade Rio Branco (id = 1)
