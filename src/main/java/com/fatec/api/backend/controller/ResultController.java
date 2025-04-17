@@ -29,7 +29,7 @@ public class ResultController {
     private ResultService resultService;
     
     @PostMapping(value="/ai", consumes = "multipart/form-data")
-    public ResponseEntity<Map<String, ResultadoDTO>> createResultai(
+    public ResponseEntity<ResultadoDTO> createResultai(
         @RequestPart("talhoes_ids") String talhoesIdsString,
         @RequestPart("file") MultipartFile geoJsonFile) throws ParseException, IOException, org.locationtech.jts.io.ParseException {
         List<Long> talhoesIds = Arrays.stream(talhoesIdsString.split(" "))
@@ -39,12 +39,9 @@ public class ResultController {
         try {
             String geoJsonContent = new String(geoJsonFile.getBytes());
             ResultadoDTO resultado = resultService.createResultAI(geoJsonContent, talhoesIds);
-            Map<String, ResultadoDTO> response = new HashMap<>();
-            response.put("resultado", resultado);
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(resultado);
         } catch (IOException e) {
-            Map<String, ResultadoDTO> errorResponse = new HashMap<>();
-            errorResponse.put("error", null); 
+            ResultadoDTO errorResponse = null; 
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
     }
@@ -67,4 +64,5 @@ public class ResultController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
     }
+    
 }
