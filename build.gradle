@@ -37,7 +37,6 @@ checkstyleTest {
     configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
 }
 
-// Tarefa para carregar variáveis de ambiente (corrigida a posição)
 task loadEnv {
     def env = file('.env')
     if (env.exists()) {
