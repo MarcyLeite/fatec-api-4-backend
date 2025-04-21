@@ -1,5 +1,6 @@
 package com.fatec.api.backend.service;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ public class UsuarioService {
         novoUsuario.setNome(nome);
         novoUsuario.setEmail(email);
         novoUsuario.setRole(role);
+        novoUsuario.setCreatedAt(new Date());
         Usuario usarioSalvo = usuarioRepository.save(novoUsuario);
         return usarioSalvo;
     }

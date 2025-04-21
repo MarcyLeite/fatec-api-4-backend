@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fatec.api.backend.model.Usuario;
 import com.fatec.api.backend.service.UsuarioService;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import org.springframework.web.bind.annotation.RequestBody; 
 
 @RestController
 @RequestMapping("/usuario")
@@ -22,7 +22,7 @@ public class UsuarioController {
         this.usuarioService = usuarioService;
     }
 
-    @PostMapping("cadatrar")
+    @PostMapping("/cadastrar")
     public ResponseEntity<Usuario> cadastrarUsuario(@RequestBody Usuario dados) {
         Usuario usuarioSalvo = usuarioService.cadastrarUsuario(dados.getNome(), dados.getEmail(), dados.getRole());
         return ResponseEntity.ok(usuarioSalvo);
