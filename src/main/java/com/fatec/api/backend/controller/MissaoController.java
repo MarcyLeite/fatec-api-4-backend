@@ -1,5 +1,6 @@
 package com.fatec.api.backend.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -8,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -38,9 +38,15 @@ public class MissaoController {
     }
 
 	@GetMapping("/{talhao_id}")
-    public ResponseEntity<List<Missao>> getMissaoByTalhao(@PathVariable Long talhao_id, @RequestBody Missao missao) {
+    public ResponseEntity<List<MissaoDTO>> getMissaoByTalhao(@PathVariable Long talhao_id) {
+
         List<Missao> missoes = missaoRepository.findByTalhaoIdNative(talhao_id);
-        return ResponseEntity.ok(missoes);
+        List<MissaoDTO> missoesDTO = new ArrayList<>();
+        for(Missao m : missoes){
+            MissaoDTO missaodto = new MissaoDTO(m);
+            missoesDTO.add(missaodto);            
+        }
+        return ResponseEntity.ok(missoesDTO);
     }
     
 }

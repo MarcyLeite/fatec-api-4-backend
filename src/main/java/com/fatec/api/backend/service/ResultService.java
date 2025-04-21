@@ -5,14 +5,15 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.scheduling.annotation.Async;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fatec.api.backend.DTO.ResultadoDTO;
 import com.fatec.api.backend.model.Missao;
 import com.fatec.api.backend.model.Resultado;
 import com.fatec.api.backend.model.Talhao;
 import com.fatec.api.backend.repository.ResultadoRepository;
-import com.fatec.api.backend.repository.TalhaoRepository;
 
 @Service
 public class ResultService {
@@ -24,7 +25,7 @@ public class ResultService {
     private MissaoService missaoService;
 
     @Autowired
-    private TalhaoRepository talhaoRepository;
+    private TalhaoService talhaoService;
 
     @Autowired
     private ResultadoRepository resultadoRepository;
@@ -38,12 +39,18 @@ public class ResultService {
 
     public Resultado salvarResultado(Resultado.Source tipoFonte, Missao missao){
         Resultado resultado = new Resultado(null, tipoFonte, missao);
-        return resultadoRepository.save(resultado);
+        try {
+            return resultadoRepository.save(resultado);
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalArgumentException("Já existe um resultado com o mesmo tipo para esta missão.");
+        }
     }
+
     @Async
     public void createResultAIAsync(String geoJsonContent, List<Long> talhoes_id) throws IOException, org.locationtech.jts.io.ParseException { // aqui deveria ser um patter provavelmente de factory
 
-        List<Talhao> talhoes = talhaoRepository.findAllById(talhoes_id);
+        
+        List<Talhao> talhoes = talhaoService.filterTalhoesByIds(talhoes_id);
         Missao missao = missaoService.CreateMissao(talhoes);
         Resultado resultado = salvarResultado(Resultado.Source.AI, missao);
         String cleanedGeoJson = geoJsonProcessor.cleanGeoJson(geoJsonContent);
@@ -59,5 +66,14 @@ public class ResultService {
         JsonNode features = geoJsonProcessor.extractFeatures(cleanedGeoJson);
         daninhasService.registerDaninhas(features, resultado);
         missaoService.finalizeMissao(missao);
+    }
+
+    public ResultadoDTO getResultadoByMission(Long mission_id, String type_result, Long talhao_id){
+        Resultado.Source source = Resultado.Source.valueOf(type_result.toUpperCase());
+        Resultado resultado = resultadoRepository.GetByMissionId(mission_id, source);
+        Talhao talhao = talhaoService.getTalhao(talhao_id);
+        JsonNode daninhasDTO = daninhasService.getDaninhasByResult(resultado.getId(), talhao.getId());
+        ResultadoDTO resultadoDTO = new ResultadoDTO(resultado, daninhasDTO);
+        return resultadoDTO;
     }
 }
