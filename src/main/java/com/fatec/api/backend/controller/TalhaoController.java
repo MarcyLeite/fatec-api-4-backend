@@ -69,7 +69,7 @@ public class TalhaoController {
 
     @GetMapping("/{id}")
     public ResponseEntity<TalhaoDTO> getTalhao(@PathVariable Long id) {
-        TalhaoDTO talhao = talhaoService.getTalhao(id);
+        TalhaoDTO talhao = talhaoService.getTalhaoDTO(id);
         return ResponseEntity.ok(talhao);
     }
 }

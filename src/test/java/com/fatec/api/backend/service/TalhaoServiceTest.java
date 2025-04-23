@@ -80,7 +80,7 @@ public class TalhaoServiceTest {
 
         when(talhaoRepository.getReferenceById(talhaoId)).thenReturn(talhao);
 
-        TalhaoDTO talhaoDTO = talhaoService.getTalhao(talhaoId);
+        TalhaoDTO talhaoDTO = talhaoService.getTalhaoDTO(talhaoId);
 
         assertEquals(talhaoId, talhaoDTO.getId());
         assertEquals("Talhão 1", talhaoDTO.getNome());

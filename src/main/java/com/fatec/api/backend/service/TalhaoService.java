@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -20,8 +22,10 @@ import java.util.stream.Collectors;
 
 @Service
 public class TalhaoService {
+
+    @Autowired
+    private TalhaoRepository talhaoRepository;
     
-    private final TalhaoRepository talhaoRepository;
     private final GeoJsonProcessor geoJsonProcessor;
     private final TalhaoFactory talhaoFactory;
 
@@ -64,10 +68,20 @@ public class TalhaoService {
         return new TalhaoDTO(talhao.getId(), talhao.getNome(), talhao.getCultura(), talhao.getArea(), geoJson);
     }
 
-    public TalhaoDTO getTalhao(Long id) {
-        Talhao talhao = talhaoRepository.getReferenceById(id);
+    public TalhaoDTO getTalhaoDTO(Long id) {
+
+        Talhao talhao = this.getTalhao(id);
         ArrayNode geoJson = geoJsonProcessor.extractCoordinates(talhao.getShape());
         return new TalhaoDTO(talhao.getId(), talhao.getNome(), talhao.getCultura(), talhao.getArea(), geoJson);
+    }
+
+    public List<Talhao> filterTalhoesByIds(List<Long> talhoes_id){
+        List<Talhao> talhoes = talhaoRepository.findAllById(talhoes_id);
+        return talhoes;
+    }
+
+    public Talhao getTalhao(Long talhaoId) {
+        return talhaoRepository.getReferenceById(talhaoId);
     }
 }
 

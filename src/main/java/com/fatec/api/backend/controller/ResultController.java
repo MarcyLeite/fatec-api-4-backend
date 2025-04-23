@@ -11,12 +11,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fatec.api.backend.DTO.ResultadoDTO;
 import com.fatec.api.backend.service.ResultService;
 
 @RestController
@@ -65,6 +68,12 @@ public class ResultController {
             errorResponse.put("error", "An error occurred while processing the request.");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
+    }
+
+    @GetMapping(value="{mission_id}/{type_result}/{talhao_id}")
+    public ResponseEntity<ResultadoDTO> getResultByMission(@PathVariable Long mission_id, @PathVariable String type_result, @PathVariable Long talhao_id){
+        ResultadoDTO resultados = resultService.getResultadoByMission(mission_id, type_result, talhao_id);
+        return ResponseEntity.ok(resultados);
     }
     
 }
