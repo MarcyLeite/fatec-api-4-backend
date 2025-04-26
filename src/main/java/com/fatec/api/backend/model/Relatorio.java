@@ -1,6 +1,6 @@
 package com.fatec.api.backend.model;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,29 +19,32 @@ import lombok.Setter;
 @Setter
 @Table(name = "relatorio")
 public class Relatorio {
-    enum Status {
+    public enum Status {
         Pending,
         Aproved,
         Reproved,
         Edited
     }
-
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
     @Column(name = "start_review")
-    private Date startReview;
+    private LocalDateTime startReview;
 
     @Column(name = "end_review")
-    private Date endReview;
+    private LocalDateTime endReview;
 
     @Column(name = "percentual_diff")
     private Float percentualDifference;
 
     @Column(name = "rel_status")
     private Status status;
+
+    @OneToOne
+    @JoinColumn(name = "mis_id")
+    private Missao missao;
     
     @ManyToOne
     @JoinColumn(name = "use_id")
