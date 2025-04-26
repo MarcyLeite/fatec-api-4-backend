@@ -63,6 +63,16 @@ public class TalhaoService {
         return new PageImpl<>(talhoesDTO, pageable, talhoesPage.getTotalElements());
     }
 
+    public List<TalhaoDTO> listarTalhaoByFarm(Long fazenda_id) {
+        List<Talhao> talhoes = talhaoRepository.findTalhaoFazId(fazenda_id);
+
+        List<TalhaoDTO> talhoesDTO = talhoes.stream()
+                .map(this::convertToGeoDTO)
+                .collect(Collectors.toList());
+                
+        return talhoesDTO;
+    }
+
     private TalhaoDTO convertToGeoDTO(Talhao talhao) {
         ArrayNode geoJson = geoJsonProcessor.extractCoordinates(talhao.getShape());
         return new TalhaoDTO(talhao.getId(), talhao.getNome(), talhao.getCultura(), talhao.getArea(), geoJson);
