@@ -59,8 +59,8 @@ public class RelatorioService {
         
         Relatorio relatorioSalvo = relatorioRepository.save(relatorio);
         
-        if (missaoId != null && 
-           (status == Relatorio.Status.Aproved || status == Relatorio.Status.Reproved)) {
+        if (missaoId != null
+        && (status == Relatorio.Status.Aproved || status == Relatorio.Status.Reproved)) {
             
             missaoService.finalizeMissao(missao);
         }
