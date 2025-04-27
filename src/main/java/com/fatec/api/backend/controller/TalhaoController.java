@@ -67,6 +67,15 @@ public class TalhaoController {
         return ResponseEntity.ok(talhoes);
     }
 
+    @GetMapping("/listar/{fazenda_id}")
+    public ResponseEntity<List<TalhaoDTO>> listarTalhoesPaginadosByFarm(
+            @PathVariable("fazenda_id") Long fazenda_id
+    ) {
+        List<TalhaoDTO> talhoes = talhaoService.listarTalhaoByFarm(fazenda_id);
+        return ResponseEntity.ok(talhoes);
+    }
+
+
     @GetMapping("/{id}")
     public ResponseEntity<TalhaoDTO> getTalhao(@PathVariable Long id) {
         TalhaoDTO talhao = talhaoService.getTalhaoDTO(id);
