@@ -3,10 +3,12 @@ package com.fatec.api.backend.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Optional;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -60,6 +62,54 @@ public class UsuarioServiceTest {
     }
 
     @Test
+    void deveEditarUsuarioComSucesso() {
+        Usuario usuarioExiste = new Usuario();
+        usuarioExiste.setNome("Harry");
+        usuarioExiste.setEmail("harry@email.com");
+        usuarioExiste.setRole(Role.Consultor);
+        usuarioExiste.setAtivo(true);
+
+        Usuario usuarioAtualizado = new Usuario();
+        usuarioAtualizado.setNome("Harry POTTAR");
+        usuarioAtualizado.setEmail("potter@email.com");
+        usuarioAtualizado.setRole(Role.Administrador);
+        usuarioAtualizado.setAtivo(false);
+
+        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuarioExiste));
+        when(usuarioRepository.save(any(Usuario.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Usuario resultado = usuarioService.editarUsuario(1L, usuarioAtualizado);
+
+        assertEquals("Harry POTTAR", resultado.getNome());
+        assertEquals("potter@email.com", resultado.getEmail());
+        assertEquals(Role.Administrador, resultado.getRole());        
+
+    }
+
+    @Test
+    void deveFalharAoEditarUsuario() {
+        Usuario usuarioExiste = new Usuario();
+        usuarioExiste.setNome("Harry");
+        usuarioExiste.setEmail("harry@email.com");
+        usuarioExiste.setRole(Role.Consultor);
+        usuarioExiste.setAtivo(true);
+
+        Usuario usuarioAtualizado = new Usuario();
+        usuarioAtualizado.setNome("Harry POTTAR");
+        usuarioAtualizado.setEmail("potter@email.com");
+        usuarioAtualizado.setRole(Role.Administrador);
+        usuarioAtualizado.setAtivo(false);
+
+        when(usuarioRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            usuarioService.editarUsuario(999L, usuarioAtualizado);
+        });
+
+        assertEquals("Usuário de Id 999não encontrado", exception.getMessage());
+
+    }
+
     void deveListarTodosOsUsuariosPaginados() {
         int page = 0;
         int size = 10;

@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -31,6 +32,11 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioSalvo);
     }
 
+    @PutMapping("/editar/{id}")
+    public ResponseEntity<Usuario> editarUsuario(@PathVariable Long id, @RequestBody Usuario dados) {
+        return ResponseEntity.ok(usuarioService.editarUsuario(id, dados));
+    }
+    
     @GetMapping("/listar/{page}/{quantity}")
     public ResponseEntity<Page<Usuario>> listarUsuariosPaginados(
             @PathVariable("page") int page,
