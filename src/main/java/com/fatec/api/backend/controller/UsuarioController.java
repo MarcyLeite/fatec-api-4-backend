@@ -2,7 +2,9 @@ package com.fatec.api.backend.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,5 +28,10 @@ public class UsuarioController {
     public ResponseEntity<Usuario> cadastrarUsuario(@RequestBody Usuario dados) {
         Usuario usuarioSalvo = usuarioService.cadastrarUsuario(dados.getNome(), dados.getEmail(), dados.getRole());
         return ResponseEntity.ok(usuarioSalvo);
+    }
+
+    @PutMapping("/editar/{id}")
+    public ResponseEntity<Usuario> editarUsuario(@PathVariable Long id, @RequestBody Usuario dados) {
+        return ResponseEntity.ok(usuarioService.editarUsuario(id, dados));
     }
 }
