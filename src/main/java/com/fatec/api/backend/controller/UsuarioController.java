@@ -1,7 +1,10 @@
 package com.fatec.api.backend.controller;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,5 +29,13 @@ public class UsuarioController {
     public ResponseEntity<Usuario> cadastrarUsuario(@RequestBody Usuario dados) {
         Usuario usuarioSalvo = usuarioService.cadastrarUsuario(dados.getNome(), dados.getEmail(), dados.getRole());
         return ResponseEntity.ok(usuarioSalvo);
+    }
+
+    @GetMapping("/listar/{page}/{quantity}")
+    public ResponseEntity<Page<Usuario>> listarUsuariosPaginados(
+            @PathVariable("page") int page,
+            @PathVariable("quantity") int size) {
+        Page<Usuario> usuarios = usuarioService.listarUsuariosPaginados(page, size);
+        return ResponseEntity.ok(usuarios);
     }
 }
