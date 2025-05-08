@@ -36,6 +36,9 @@ public class Usuario {
     @Column(name = "use_role")
     private Role role;
 
+    @Column(name = "active")
+    private Boolean ativo;
+
     @Column(name = "created_at")
     private Date createdAt;
 }
