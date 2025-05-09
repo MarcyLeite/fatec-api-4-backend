@@ -26,11 +26,12 @@ public class UsuarioService {
         return usuarioRepository.findByRole(Usuario.Role.Analista);
     }
 
-    public Usuario cadastrarUsuario(String nome, String email, Role role) {
+    public Usuario cadastrarUsuario(String nome, String email, Role role, Boolean ativo) {
         Usuario novoUsuario = new Usuario();
         novoUsuario.setNome(nome);
         novoUsuario.setEmail(email);
         novoUsuario.setRole(role);
+        novoUsuario.setAtivo(true);
         novoUsuario.setCreatedAt(new Date());
         Usuario usarioSalvo = usuarioRepository.save(novoUsuario);
         return usarioSalvo;
