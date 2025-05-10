@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.fatec.api.backend.model.Usuario;
@@ -18,6 +19,8 @@ public class UsuarioService {
     
     private UsuarioRepository usuarioRepository;
 
+    private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
     public UsuarioService(UsuarioRepository usuarioRepository) {
         this.usuarioRepository = usuarioRepository;
     }
@@ -26,11 +29,12 @@ public class UsuarioService {
         return usuarioRepository.findByRole(Usuario.Role.Analista);
     }
 
-    public Usuario cadastrarUsuario(String nome, String email, Role role) {
+    public Usuario cadastrarUsuario(String nome, String senha, String email, Role role) {
         Usuario novoUsuario = new Usuario();
         novoUsuario.setNome(nome);
         novoUsuario.setEmail(email);
         novoUsuario.setRole(role);
+        novoUsuario.setPassword(encoder.encode(senha));
         novoUsuario.setCreatedAt(new Date());
         Usuario usarioSalvo = usuarioRepository.save(novoUsuario);
         return usarioSalvo;
@@ -53,7 +57,7 @@ public class UsuarioService {
         throw new RuntimeException("Usuário de Id " + id + "não encontrado");
 
     }
-    
+
     public Page<Usuario> listarUsuariosPaginados(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return usuarioRepository.findAll(pageable);
