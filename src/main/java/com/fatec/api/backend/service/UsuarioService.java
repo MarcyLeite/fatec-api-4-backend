@@ -18,11 +18,13 @@ import com.fatec.api.backend.repository.UsuarioRepository;
 public class UsuarioService {
     
     private UsuarioRepository usuarioRepository;
+    private JWTAuth jwtAuth;
 
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-    public UsuarioService(UsuarioRepository usuarioRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository, JWTAuth jwtAuth) {
         this.usuarioRepository = usuarioRepository;
+        this.jwtAuth = jwtAuth;
     }
 
     public List<Usuario> listarAnalistas() {
@@ -48,6 +50,7 @@ public class UsuarioService {
             usuarioEditado.setNome(dados.getNome());
             usuarioEditado.setEmail(dados.getEmail());
             usuarioEditado.setRole(dados.getRole());
+            usuarioEditado.setPassword(encoder.encode(dados.getPassword()));
             usuarioEditado.setAtivo(dados.getAtivo());
             
             Usuario usuarioAtualizado = usuarioRepository.save(usuarioEditado);
@@ -56,6 +59,28 @@ public class UsuarioService {
 
         throw new RuntimeException("Usuário de Id " + id + "não encontrado");
 
+    }
+
+    public String loginUsuario(String email, String senha) {
+        Usuario usuario = usuarioRepository.findByEmail(email);
+        if(usuario.equals(null)) {
+            return null;
+        }
+        
+        if(!encoder.matches(senha, usuario.getPassword())) {
+            return null;
+        }
+
+        return jwtAuth.createToken(usuario);
+    }
+
+    public String verifyToken(String token) {
+        try {
+            jwtAuth.decode(token);
+            return "valid";
+        } catch (Exception e) {
+            return "invalid";
+        }
     }
 
     public Page<Usuario> listarUsuariosPaginados(int page, int size) {

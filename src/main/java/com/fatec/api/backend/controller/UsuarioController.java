@@ -44,4 +44,15 @@ public class UsuarioController {
         Page<Usuario> usuarios = usuarioService.listarUsuariosPaginados(page, size);
         return ResponseEntity.ok(usuarios);
     }
+
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody Usuario usuario) {
+        String token = usuarioService.loginUsuario(usuario.getEmail(), usuario.getPassword());
+        return ResponseEntity.ok(token);
+    }
+
+    @GetMapping("verify/{token}")
+    public ResponseEntity<String> verify(@PathVariable String token) {
+        return ResponseEntity.ok(usuarioService.verifyToken(token));
+    }
 }

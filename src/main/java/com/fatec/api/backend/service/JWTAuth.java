@@ -23,7 +23,7 @@ public class JWTAuth {
     public JWTVerifier verifier;
 
     @Autowired
-    private UsuarioRepository userRepository;
+    private UsuarioRepository usuarioRepository;
 
     public JWTAuth() {
         algorithm = Algorithm.HMAC256(JWT_SECRET);
@@ -35,22 +35,26 @@ public class JWTAuth {
             .withIssuer(JWT_ISSUER)
             .withSubject("login")
             .withClaim("id", user.getId().toString())
-            .withClaim("role", user.getRole().toString())
             .withIssuedAt(new Date())
             .withJWTId(UUID.randomUUID().toString())
             .sign(algorithm);
     }
-    // public DecodedJWT decode(String token) {
-    //     return verifier.verify(token);
-    // }
-    // public Long extractId (String token) {
-    //     return Long.valueOf(decode(token).getClaim("id").asString());
-    // }
+    public DecodedJWT decode(String token) {
+        return verifier.verify(token);
+    }
+    public Long extractId (String token) {
+        return Long.valueOf(decode(token).getClaim("id").asString());
+    }
 
-    // public User extractUser (String token) {
-    //     Long tokenId = extractId(token);
-    //     Optional<User> optionalUser = userRepository.findById(tokenId);
-    //     if(!optionalUser.isPresent()) return null;
-    //     return optionalUser.get();
-    // }
+    public Usuario extractUser (String token) {
+        Long tokenId = extractId(token);
+        Optional<Usuario> optionalUser = usuarioRepository.findById(tokenId);
+        if(!optionalUser.isPresent()) return null;
+        return optionalUser.get();
+    }
+
+    public Boolean hasAccess (Usuario.Role role, String token) {
+        Usuario usuario = extractUser(token);
+        return usuario.getRole().equals(role);
+    }
 }
