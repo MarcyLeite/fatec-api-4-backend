@@ -49,7 +49,9 @@ public class JWTAuth {
     public Usuario extractUser (String token) {
         Long tokenId = extractId(token);
         Optional<Usuario> optionalUser = usuarioRepository.findById(tokenId);
-        if(!optionalUser.isPresent()) return null;
+        if(!optionalUser.isPresent()) {
+            return null;
+        }
         return optionalUser.get();
     }
 
