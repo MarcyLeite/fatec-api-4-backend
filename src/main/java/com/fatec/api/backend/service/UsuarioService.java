@@ -72,6 +72,10 @@ public class UsuarioService {
             return null;
         }
 
+        if(!usuario.getAtivo()) {
+            return null;
+        }
+
         return jwtAuth.createToken(usuario);
     }
 
