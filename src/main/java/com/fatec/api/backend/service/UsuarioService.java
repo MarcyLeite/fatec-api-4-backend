@@ -75,12 +75,11 @@ public class UsuarioService {
         return jwtAuth.createToken(usuario);
     }
 
-    public String verifyToken(String token) {
+    public Usuario verifyToken(String token) {
         try {
-            jwtAuth.decode(token);
-            return "valid";
+            return jwtAuth.extractUser(token);
         } catch (Exception e) {
-            return "invalid";
+            return null;
         }
     }
 

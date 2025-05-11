@@ -51,8 +51,8 @@ public class UsuarioController {
         return ResponseEntity.ok(token);
     }
 
-    @GetMapping("verify/{token}")
-    public ResponseEntity<String> verify(@PathVariable String token) {
+    @GetMapping("/verifyData/{token}")
+    public ResponseEntity<Usuario> verify(@PathVariable String token) {
         return ResponseEntity.ok(usuarioService.verifyToken(token));
     }
 }
