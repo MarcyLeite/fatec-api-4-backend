@@ -28,7 +28,7 @@ public class UsuarioController {
 
     @PostMapping("/cadastrar")
     public ResponseEntity<Usuario> cadastrarUsuario(@RequestBody Usuario dados) {
-        Usuario usuarioSalvo = usuarioService.cadastrarUsuario(dados.getNome(), dados.getEmail(), dados.getRole(), dados.getAtivo());
+        Usuario usuarioSalvo = usuarioService.cadastrarUsuario(dados.getNome(), dados.getPassword(), dados.getEmail(), dados.getRole(), dados.getAtivo());
         return ResponseEntity.ok(usuarioSalvo);
     }
 
@@ -43,5 +43,16 @@ public class UsuarioController {
             @PathVariable("quantity") int size) {
         Page<Usuario> usuarios = usuarioService.listarUsuariosPaginados(page, size);
         return ResponseEntity.ok(usuarios);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody Usuario usuario) {
+        String token = usuarioService.loginUsuario(usuario.getEmail(), usuario.getPassword());
+        return ResponseEntity.ok(token);
+    }
+
+    @GetMapping("/verifyData/{token}")
+    public ResponseEntity<Usuario> verify(@PathVariable String token) {
+        return ResponseEntity.ok(usuarioService.verifyToken(token));
     }
 }

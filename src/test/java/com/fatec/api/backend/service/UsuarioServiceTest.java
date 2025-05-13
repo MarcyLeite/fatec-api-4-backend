@@ -46,7 +46,7 @@ public class UsuarioServiceTest {
 
         when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuario1);
 
-        Usuario usuarioSalvo = usuarioService.cadastrarUsuario("Larry", "eolarry@gmail.com", Role.Administrador, true);
+        Usuario usuarioSalvo = usuarioService.cadastrarUsuario("Larry", "123", "eolarry@gmail.com", Role.Administrador, true);
 
         assertEquals(usuario1.getNome(), usuarioSalvo.getNome());
         assertEquals(usuario1.getEmail(), usuarioSalvo.getEmail());
@@ -59,7 +59,7 @@ public class UsuarioServiceTest {
         when(usuarioRepository.save(any(Usuario.class))).thenThrow(new RuntimeException("Erro ao salvar usuário"));
 
         assertThrows(RuntimeException.class, () -> {
-            usuarioService.cadastrarUsuario("Erro", "erro@gmail", Role.Consultor, true);
+            usuarioService.cadastrarUsuario("Erro", "123", "erro@gmail", Role.Consultor, true);
         });
     }
 
@@ -74,6 +74,7 @@ public class UsuarioServiceTest {
         Usuario usuarioAtualizado = new Usuario();
         usuarioAtualizado.setNome("Harry POTTAR");
         usuarioAtualizado.setEmail("potter@email.com");
+        usuarioAtualizado.setPassword("123");
         usuarioAtualizado.setRole(Role.Administrador);
         usuarioAtualizado.setAtivo(false);
 

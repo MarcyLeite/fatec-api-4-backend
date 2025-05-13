@@ -11,4 +11,5 @@ import com.fatec.api.backend.model.Usuario;
 public interface UsuarioRepository extends JpaRepository<Usuario, Long>{
     
     List<Usuario> findByRole(Usuario.Role role);
+    Usuario findByEmail(String email);
 }

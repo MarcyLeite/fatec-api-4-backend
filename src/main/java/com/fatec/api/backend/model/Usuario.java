@@ -2,6 +2,9 @@ package com.fatec.api.backend.model;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -41,4 +44,8 @@ public class Usuario {
 
     @Column(name = "created_at")
     private Date createdAt;
+
+    @Column(name = "use_password")
+    @JsonProperty(access = Access.WRITE_ONLY)
+    private String password;
 }
