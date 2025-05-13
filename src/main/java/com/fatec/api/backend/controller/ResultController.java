@@ -37,7 +37,7 @@ public class ResultController {
     private UsuarioService usuarioService;
 
     private Usuario.Role[] consultorPermissionList = new Usuario.Role[]{ Usuario.Role.Administrador, Usuario.Role.Consultor };
-    private Usuario.Role[] analistPermissionList = new Usuario.Role[]{ Usuario.Role.Administrador, Usuario.Role.Consultor };
+    private Usuario.Role[] analistPermissionList = new Usuario.Role[]{ Usuario.Role.Administrador, Usuario.Role.Analista };
     private Usuario.Role[] allPermissionList = new Usuario.Role[]{ Usuario.Role.Administrador, Usuario.Role.Consultor, Usuario.Role.Analista };
 
 

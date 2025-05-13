@@ -14,6 +14,8 @@ import com.fatec.api.backend.model.Usuario;
 import com.fatec.api.backend.model.Usuario.Role;
 import com.fatec.api.backend.repository.UsuarioRepository;
 
+import jakarta.annotation.PostConstruct;
+
 @Service
 public class UsuarioService {
     
@@ -105,5 +107,15 @@ public class UsuarioService {
         }
 
         return false;
+    }
+
+    public Usuario createAdmin () {
+        if (usuarioRepository.findByEmail("admin@email.com") != null) return null;
+        return cadastrarUsuario("admin", "admin", "admin@email.com", Usuario.Role.Administrador, true);
+    }
+
+    @PostConstruct
+    public void init() {
+        createAdmin();
     }
 }
