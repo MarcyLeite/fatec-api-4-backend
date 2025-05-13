@@ -15,12 +15,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fatec.api.backend.DTO.ResultadoDTO;
+import com.fatec.api.backend.model.Usuario;
 import com.fatec.api.backend.service.ResultService;
+import com.fatec.api.backend.service.UsuarioService;
 
 @RestController
 @RequestMapping("/result")
@@ -30,10 +33,25 @@ public class ResultController {
     @Autowired
     private ResultService resultService;
     
+    @Autowired
+    private UsuarioService usuarioService;
+
+    private Usuario.Role[] consultorPermissionList = new Usuario.Role[]{ Usuario.Role.Administrador, Usuario.Role.Consultor };
+    private Usuario.Role[] analistPermissionList = new Usuario.Role[]{ Usuario.Role.Administrador, Usuario.Role.Consultor };
+    private Usuario.Role[] allPermissionList = new Usuario.Role[]{ Usuario.Role.Administrador, Usuario.Role.Consultor, Usuario.Role.Analista };
+
+
     @PostMapping(value="/ai", consumes = "multipart/form-data")
-    public ResponseEntity<Map<String, String> > createResultai(
+    public ResponseEntity<?> createResultai(
         @RequestPart("talhoes_ids") String talhoesIdsString,
-        @RequestPart("file") MultipartFile geoJsonFile) throws ParseException, IOException, org.locationtech.jts.io.ParseException {
+        @RequestPart("file") MultipartFile geoJsonFile,
+        @RequestParam String token
+    ) throws ParseException, IOException, org.locationtech.jts.io.ParseException {
+
+        if(!usuarioService.verifyAccess(consultorPermissionList, token)) {
+            return ResponseEntity.status(401).body("Unauthorized");
+        }
+
         List<Long> talhoesIds = Arrays.stream(talhoesIdsString.split(" "))
                                             .map(String::trim)
                                             .map(str -> Long.valueOf(str))
@@ -52,9 +70,15 @@ public class ResultController {
     }
 
     @PostMapping(value="/qa", consumes = "multipart/form-data")
-    public ResponseEntity<Map<String, String>> createResultqa(
+    public ResponseEntity<?> createResultqa(
         @RequestPart("missao_id") String missaoId,
-        @RequestPart("file") MultipartFile geoJsonFile) throws ParseException, IOException, org.locationtech.jts.io.ParseException {
+        @RequestPart("file") MultipartFile geoJsonFile,
+        @RequestParam String token
+    ) throws ParseException, IOException, org.locationtech.jts.io.ParseException {
+
+        if(!usuarioService.verifyAccess(analistPermissionList, token)) {
+            return ResponseEntity.status(401).body("Unauthorized");
+        }
 
         Long missao_id = Long.valueOf(missaoId);  
         try {
@@ -71,7 +95,16 @@ public class ResultController {
     }
 
     @GetMapping(value="{mission_id}/{type_result}/{talhao_id}")
-    public ResponseEntity<ResultadoDTO> getResultByMission(@PathVariable Long mission_id, @PathVariable String type_result, @PathVariable Long talhao_id){
+    public ResponseEntity<?> getResultByMission(
+        @PathVariable Long mission_id,
+        @PathVariable String type_result,
+        @PathVariable Long talhao_id,
+        @RequestParam String token
+    ) {
+        if(!usuarioService.verifyAccess(allPermissionList, token)) {
+            return ResponseEntity.status(401).body("Unauthorized");
+        }
+
         ResultadoDTO resultados = resultService.getResultadoByMission(mission_id, type_result, talhao_id);
         return ResponseEntity.ok(resultados);
     }

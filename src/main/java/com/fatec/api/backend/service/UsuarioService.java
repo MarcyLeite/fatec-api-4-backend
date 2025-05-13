@@ -91,4 +91,19 @@ public class UsuarioService {
         Pageable pageable = PageRequest.of(page, size);
         return usuarioRepository.findAll(pageable);
     }
+
+    public Boolean verifyAccess (Usuario.Role role, String token) {
+        Usuario usuario = jwtAuth.extractUser(token);
+        return usuario.getRole().equals(role);
+    }
+    
+    public Boolean verifyAccess (Usuario.Role[] roleList, String token) {
+        for (Usuario.Role role: roleList) {
+            if (verifyAccess(role, token)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
