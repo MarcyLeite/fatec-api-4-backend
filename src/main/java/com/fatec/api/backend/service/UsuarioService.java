@@ -110,7 +110,9 @@ public class UsuarioService {
     }
 
     public Usuario createAdmin () {
-        if (usuarioRepository.findByEmail("admin@email.com") != null) return null;
+        if (usuarioRepository.findByEmail("admin@email.com") != null) {
+            return null;
+        }
         return cadastrarUsuario("admin", "admin", "admin@email.com", Usuario.Role.Administrador, true);
     }
 
