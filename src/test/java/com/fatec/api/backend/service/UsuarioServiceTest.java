@@ -1,9 +1,12 @@
 package com.fatec.api.backend.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -20,6 +23,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.fatec.api.backend.model.Usuario;
 import com.fatec.api.backend.model.Usuario.Role;
@@ -30,6 +34,9 @@ public class UsuarioServiceTest {
     
     @InjectMocks
     private UsuarioService usuarioService;
+
+    @Mock
+    private PasswordEncoder encoder;
 
     @Mock
     private UsuarioRepository usuarioRepository;
@@ -113,6 +120,7 @@ public class UsuarioServiceTest {
 
     }
 
+    @Test
     void deveListarTodosOsUsuariosPaginados() {
         int page = 0;
         int size = 10;
@@ -158,4 +166,36 @@ public class UsuarioServiceTest {
 
         assertEquals("Erro ao buscar usuários", exception.getMessage());
     }
+
+    @Test
+    void deveEditarUsuarioSemAlterarSenha() {
+        String senhaCodificada = "$2a$10$abcdefg1234567890hijklmnopqrstuv"; 
+        Usuario usuarioExiste = new Usuario();
+        usuarioExiste.setNome("Luffy");
+        usuarioExiste.setEmail("Luffy@email.com");
+        usuarioExiste.setRole(Role.Consultor);
+        usuarioExiste.setPassword(senhaCodificada); 
+        usuarioExiste.setAtivo(true);
+
+        Usuario usuarioAtualizado = new Usuario();
+        usuarioAtualizado.setNome("Monkey D Luffy");
+        usuarioAtualizado.setEmail("Monkey@email.com");
+        usuarioAtualizado.setRole(Role.Administrador);
+        usuarioAtualizado.setPassword(null); 
+        usuarioAtualizado.setAtivo(false);
+
+        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuarioExiste));
+        when(usuarioRepository.save(any(Usuario.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Usuario resultado = usuarioService.editarUsuario(1L, usuarioAtualizado);
+
+        assertEquals("Monkey D Luffy", resultado.getNome());
+        assertEquals("Monkey@email.com", resultado.getEmail());
+        assertEquals(Role.Administrador, resultado.getRole());
+        assertEquals(senhaCodificada, resultado.getPassword()); 
+        assertFalse(resultado.getAtivo());
+
+        verify(encoder, never()).encode(any());
+    }
+
 }

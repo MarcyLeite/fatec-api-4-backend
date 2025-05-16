@@ -51,11 +51,13 @@ public class UsuarioService {
             usuarioEditado.setNome(dados.getNome());
             usuarioEditado.setEmail(dados.getEmail());
             usuarioEditado.setRole(dados.getRole());
-            usuarioEditado.setPassword(encoder.encode(dados.getPassword()));
             usuarioEditado.setAtivo(dados.getAtivo());
             
-            Usuario usuarioAtualizado = usuarioRepository.save(usuarioEditado);
-            return usuarioAtualizado;
+            if(dados.getPassword() != null && !dados.getPassword().isBlank()) {
+                usuarioEditado.setPassword(encoder.encode(dados.getPassword()));    
+            }
+            
+            return usuarioRepository.save(usuarioEditado);
         }
 
         throw new RuntimeException("Usuário de Id " + id + "não encontrado");
