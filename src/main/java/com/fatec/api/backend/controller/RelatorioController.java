@@ -8,9 +8,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fatec.api.backend.service.RelatorioService;
+import com.fatec.api.backend.service.UsuarioService;
 import com.fatec.api.backend.model.Relatorio;
+import com.fatec.api.backend.model.Usuario;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -23,8 +26,17 @@ public class RelatorioController {
     @Autowired
     private RelatorioService relatorioService;
 
+    @Autowired
+    UsuarioService usuarioService;
+
+    private Usuario.Role[] permissionList = new Usuario.Role[]{ Usuario.Role.Administrador, Usuario.Role.Analista };
+
+
     @PostMapping("/salvar")
-    public ResponseEntity<String> criarRelatorio(@RequestBody Map<String, Object> request) {
+    public ResponseEntity<String> criarRelatorio(@RequestBody Map<String, Object> request, @RequestParam String token) {
+        if(!usuarioService.verifyAccess(permissionList, token)) {
+            return ResponseEntity.status(401).body("Unauthorized");
+        }
         try {
             if (!request.containsKey("dataInicioRelatorio") || request.get("dataInicioRelatorio") == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("A data de início do relatório é obrigatória.");
