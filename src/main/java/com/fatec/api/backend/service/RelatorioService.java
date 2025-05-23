@@ -1,9 +1,12 @@
 package com.fatec.api.backend.service;
 
+import com.fatec.api.backend.DTO.AcuraciaDTO;
 import com.fatec.api.backend.model.Missao;
 import com.fatec.api.backend.model.Relatorio;
+import com.fatec.api.backend.model.Resultado;
 import com.fatec.api.backend.model.Usuario;
 import com.fatec.api.backend.repository.RelatorioRepository;
+import com.fatec.api.backend.repository.ResultadoRepository;
 import com.fatec.api.backend.repository.UsuarioRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +26,10 @@ public class RelatorioService {
     
     @Autowired
     private MissaoService missaoService;
-    
+
+    @Autowired
+    private ResultadoRepository resultadoRepository;
+
     /**
      * Processa e salva um relatório no banco de dados
      * 
@@ -46,6 +52,16 @@ public class RelatorioService {
         if (user.isEmpty()) {
             throw new IllegalArgumentException("Usuário não encontrado");
         }
+
+        Resultado res_ai = resultadoRepository.GetByMissionIdAndType(missaoId, Resultado.Source.AI);
+        Resultado res_qa = resultadoRepository.GetByMissionIdAndType(missaoId, Resultado.Source.QA);
+        
+        if (res_ai == null || res_qa == null) {
+            throw new IllegalArgumentException("Resultados não encontrados para a missão");
+        }
+        
+        AcuraciaDTO metricas= relatorioRepository.calcularMetricas(res_qa.getId(), res_ai.getId());
+
         Usuario usuario = user.get();
         
         Relatorio relatorio = new Relatorio();
@@ -56,6 +72,11 @@ public class RelatorioService {
         relatorio.setStatus(status);
         relatorio.setUsuario(usuario);
         relatorio.setMissao(missao);
+
+        relatorio.setPercentualConcordancia(metricas.getConcordancia());
+        relatorio.setPercentualFalsoNegativo(metricas.getFalsoNegativo());
+        relatorio.setPercentualFalsoPositivo(metricas.getFalsoPositivo());
+
         
         Relatorio relatorioSalvo = relatorioRepository.save(relatorio);
         
