@@ -81,10 +81,12 @@ public class DashboardService {
     }
 
     private double calcularPercentualModificacoes(List<Relatorio> relatorios) {
-        if (relatorios.isEmpty()) return 0.0;
+        if (relatorios.isEmpty()) {
+            return 0.0;
+        }
         
-        long modificados = contarPorStatus(relatorios, Relatorio.Status.Edited) + 
-                          contarPorStatus(relatorios, Relatorio.Status.Reproved);
+        long modificados = contarPorStatus(relatorios, Relatorio.Status.Edited) 
+        + contarPorStatus(relatorios, Relatorio.Status.Reproved);
         
         return (modificados * 100.0) / relatorios.size();
     }
@@ -105,8 +107,8 @@ public class DashboardService {
                     metrica.setTempoMedio(calcularTempoMedio(relatoriosAnalista));
                     metrica.setAprovacoesSemEdicao((int) contarPorStatus(relatoriosAnalista, Relatorio.Status.Aproved));
                     
-                    double taxaAprovacao = relatoriosAnalista.isEmpty() ? 0.0 : 
-                        (metrica.getAprovacoesSemEdicao() * 100.0) / relatoriosAnalista.size();
+                    double taxaAprovacao = relatoriosAnalista.isEmpty() ? 0.0
+                     : (metrica.getAprovacoesSemEdicao() * 100.0) / relatoriosAnalista.size();
                     metrica.setTaxaAprovacao(String.format("%.1f%%", taxaAprovacao));
                     
                     return metrica;
