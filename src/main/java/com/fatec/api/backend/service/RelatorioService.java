@@ -1,5 +1,11 @@
 package com.fatec.api.backend.service;
 
+import java.time.LocalDateTime;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.fatec.api.backend.DTO.AcuraciaDTO;
 import com.fatec.api.backend.model.Missao;
 import com.fatec.api.backend.model.Relatorio;
@@ -8,12 +14,6 @@ import com.fatec.api.backend.model.Usuario;
 import com.fatec.api.backend.repository.RelatorioRepository;
 import com.fatec.api.backend.repository.ResultadoRepository;
 import com.fatec.api.backend.repository.UsuarioRepository;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Service
 public class RelatorioService {
@@ -46,21 +46,13 @@ public class RelatorioService {
             LocalDateTime endReview,
             Relatorio.Status status,
             Long userId,
-            Long missaoId) {
+            Long missaoId
+            ) {
         
         Optional<Usuario> user = usuarioRepository.findById(userId);
         if (user.isEmpty()) {
             throw new IllegalArgumentException("Usuário não encontrado");
         }
-
-        Resultado res_ai = resultadoRepository.GetByMissionIdAndType(missaoId, Resultado.Source.AI);
-        Resultado res_qa = resultadoRepository.GetByMissionIdAndType(missaoId, Resultado.Source.QA);
-        
-        if (res_ai == null || res_qa == null) {
-            throw new IllegalArgumentException("Resultados não encontrados para a missão");
-        }
-        
-        AcuraciaDTO metricas= relatorioRepository.calcularMetricas(res_qa.getId(), res_ai.getId());
 
         Usuario usuario = user.get();
         
@@ -72,20 +64,51 @@ public class RelatorioService {
         relatorio.setStatus(status);
         relatorio.setUsuario(usuario);
         relatorio.setMissao(missao);
-
-        relatorio.setPercentualConcordancia(metricas.getConcordancia());
-        relatorio.setPercentualFalsoNegativo(metricas.getFalsoNegativo());
-        relatorio.setPercentualFalsoPositivo(metricas.getFalsoPositivo());
-
-        
         Relatorio relatorioSalvo = relatorioRepository.save(relatorio);
         
         if (missaoId != null
         && (status == Relatorio.Status.Aproved || status == Relatorio.Status.Reproved)) {
-            
             missaoService.finalizeMissao(missao);
         }
         
         return relatorioSalvo;
     }
+
+    public void setAcuracia(Long missaoId){
+
+        Relatorio relatorio = relatorioRepository.findByMissaoId(missaoId);
+
+        Resultado res_ai = resultadoRepository.GetByMissionIdAndType(missaoId, Resultado.Source.AI);
+        Resultado res_qa = resultadoRepository.GetByMissionIdAndType(missaoId, Resultado.Source.QA);
+        
+        if (res_ai == null || res_qa == null) {
+            throw new IllegalArgumentException("Resultados não encontrados para a missão");
+        }
+
+        Double concordancia = null;
+        Double falsoNegativo = null;
+        Double falsoPositivo = null; 
+
+        AcuraciaDTO metricas = null;
+        if (relatorio.getStatus() == Relatorio.Status.Edited) {
+            metricas = relatorioRepository.calcularMetricas(missaoId);
+            if (metricas != null) {
+                concordancia = metricas.concordancia();
+                falsoNegativo = metricas.falsoNegativo();
+                falsoPositivo = metricas.falsoPositivo();
+            }
+        } 
+        if (relatorio.getStatus() == Relatorio.Status.Aproved) {
+            concordancia = 100.0;
+            falsoNegativo = 0.0;
+            falsoPositivo = 0.0;
+        }
+
+        relatorio.setPercentualConcordancia(concordancia);
+        relatorio.setPercentualFalsoNegativo(falsoNegativo);
+        relatorio.setPercentualFalsoPositivo(falsoPositivo);
+        
+        relatorioRepository.save(relatorio);
+    }
+
 }
