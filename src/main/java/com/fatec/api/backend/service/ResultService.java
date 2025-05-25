@@ -33,6 +33,9 @@ public class ResultService {
     @Autowired
     private DaninhasService daninhasService;
 
+    @Autowired
+    private RelatorioService relatorioService;
+
     public ResultService(GeoJsonProcessor gjp){
         this.geoJsonProcessor = gjp;
     }
@@ -66,11 +69,13 @@ public class ResultService {
         JsonNode features = geoJsonProcessor.extractFeatures(cleanedGeoJson);
         daninhasService.registerDaninhas(features, resultado);
         missaoService.finalizeMissao(missao);
+        relatorioService.setAcuracia(missao.getId());
+
     }
 
     public ResultadoDTO getResultadoByMission(Long mission_id, String type_result, Long talhao_id){
         Resultado.Source source = Resultado.Source.valueOf(type_result.toUpperCase());
-        Resultado resultado = resultadoRepository.GetByMissionId(mission_id, source);
+        Resultado resultado = resultadoRepository.GetByMissionIdAndType(mission_id, source);
         Talhao talhao = talhaoService.getTalhao(talhao_id);
         JsonNode daninhasDTO = daninhasService.getDaninhasByResult(resultado.getId(), talhao.getId());
         ResultadoDTO resultadoDTO = new ResultadoDTO(resultado, daninhasDTO);

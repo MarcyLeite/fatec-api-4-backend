@@ -11,6 +11,5 @@ import com.fatec.api.backend.model.Resultado;
 public interface ResultadoRepository extends JpaRepository<Resultado, Long> {
 
     @Query("SELECT r FROM Resultado r WHERE r.missao.id = :missionId and r.source = :typeResult")
-    Resultado GetByMissionId(@Param("missionId") Long missionId, @Param("typeResult") Resultado.Source typeResult);
-
+    Resultado GetByMissionIdAndType(@Param("missionId") Long missionId, @Param("typeResult") Resultado.Source typeResult);
 }

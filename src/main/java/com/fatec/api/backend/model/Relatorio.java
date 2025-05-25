@@ -36,8 +36,14 @@ public class Relatorio {
     @Column(name = "end_review")
     private LocalDateTime endReview;
 
-    @Column(name = "percentual_diff")
-    private Float percentualDifference;
+    @Column(name = "percentual_concordancia")
+    private Double percentualConcordancia;
+
+    @Column(name = "percentual_falso_negativo")
+    private Double percentualFalsoNegativo;
+
+    @Column(name = "percentual_falso_positivo")
+    private Double percentualFalsoPositivo;
 
     @Column(name = "rel_status")
     private Status status;

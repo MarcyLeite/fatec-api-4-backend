@@ -55,6 +55,7 @@ public class RelatorioController {
             }
 
             LocalDateTime dataInicioRelatorio = LocalDateTime.parse(request.get("dataInicioRelatorio").toString());
+            
             String statusStr = request.get("status").toString().trim();
             Relatorio.Status status = Relatorio.Status.valueOf(statusStr);
             Long userId = Long.valueOf(request.get("userId").toString());
