@@ -54,9 +54,4 @@ public class JWTAuth {
         }
         return optionalUser.get();
     }
-
-    public Boolean hasAccess (Usuario.Role role, String token) {
-        Usuario usuario = extractUser(token);
-        return usuario.getRole().equals(role);
-    }
 }
